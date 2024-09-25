@@ -1,24 +1,14 @@
 import { forwardRef } from 'react';
-import {
-  LabelledProps,
-  pickLabelledProps,
-  withoutLabelledProps,
-} from '../../../types';
-import { buildClassName } from '../../../util';
-import { FileInput, FileInputProps } from '../base';
+import { LabelledProps, pickLabelledProps, withoutLabelledProps } from '../../../types/labelled.props';
+import { buildClassName } from '../../../util/util-functions';
+import { FileInput, FileInputProps } from '../base/FileInput';
 import { BaseLabelledInput } from './BaseLabelledInput';
 
 export interface LabelledFileInputProps extends FileInputProps, LabelledProps {}
 
-export const LabelledFileInput = forwardRef<
-  HTMLInputElement,
-  LabelledFileInputProps
->(
+export const LabelledFileInput = forwardRef<HTMLInputElement, LabelledFileInputProps>(
   (
-    {
-      labelProps: { className: labelClassName, ...otherLabelProps } = {},
-      ...otherProps
-    }: LabelledFileInputProps,
+    { labelProps: { className: labelClassName, ...otherLabelProps } = {}, ...otherProps }: LabelledFileInputProps,
     ref
   ) => {
     return (

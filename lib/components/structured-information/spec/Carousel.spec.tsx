@@ -46,7 +46,37 @@ describe('Carousel', () => {
       expect(onChangeActiveItem).toHaveBeenCalledTimes(1);
       expect(onChangeActiveItem).toHaveBeenLastCalledWith('test 2');
     });
-    test('can activate with Space', () => {});
-    test('can activate with Enter', () => {});
+    test('can activate with Space', async () => {
+      const { getByTestId } = renderCarousel({ onChangeActiveItem });
+
+      const item2 = getByTestId('test 2');
+
+      item2.focus();
+      await userEvent.keyboard(' ');
+
+      expect(onChangeActiveItem).toHaveBeenCalledTimes(1);
+      expect(onChangeActiveItem).toHaveBeenLastCalledWith('test 2');
+    });
+    test('can activate with Enter', async () => {
+      const { getByTestId } = renderCarousel({ onChangeActiveItem });
+
+      const item2 = getByTestId('test 2');
+
+      item2.focus();
+      await userEvent.keyboard('{Enter}');
+
+      expect(onChangeActiveItem).toHaveBeenCalledTimes(1);
+      expect(onChangeActiveItem).toHaveBeenLastCalledWith('test 2');
+    });
+    test(`reactivating the active item clears it`, async () => {
+      const { getByTestId } = renderCarousel({ onChangeActiveItem });
+
+      const item2 = getByTestId('test 2');
+
+      await userEvent.click(item2);
+      await userEvent.click(item2);
+
+      expect(onChangeActiveItem).toHaveBeenLastCalledWith(null);
+    });
   });
 });

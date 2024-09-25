@@ -1,3 +1,4 @@
+// Used for building the types for the lib.
 {
   "compilerOptions": {
     "target": "ES2020",

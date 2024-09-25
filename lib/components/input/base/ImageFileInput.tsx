@@ -1,7 +1,7 @@
 import { ImageConversionType, ImageUtil } from '@jtjs/browser';
 import { forwardRef, useState } from 'react';
-import { useIsMountedRef } from '../../../hooks';
-import { buildClassName } from '../../../util';
+import { useIsMountedRef } from '../../../hooks/use-is-mounted-ref.hook';
+import { buildClassName } from '../../../util/util-functions';
 import { FileInput, FileInputProps } from './FileInput';
 
 export interface ImageFileInputProps extends FileInputProps {
@@ -14,27 +14,21 @@ export interface ImageFileInputProps extends FileInputProps {
    * For example, `webp` can be preferable because of how small it is for
    * the same perceptible visual quality of something like `png`.
    *
-   * To access the converted output, use the `onConvertedFiles` prop.
-   *
    * Note that file type acceptance in HTML is more of a suggestion than something
    * the browser enforces. If the user provides a non-image file, the conversion
    * will just output the file they provided unchanged.
+   * 
+   * When the conversion is complete, `onChangeFiles` will be invoked with the results
+   * of the conversion.
    */
-  convertIncomingTo?: ImageConversionType;
-  /**
-   * What to do when the input finishes converting incoming files. This is only
-   * called if `convertIncomingTo` is provided.
-   *
-   * @param files - The converted files.
-   */
-  onConvertedFiles?: (files: File[]) => void;
+  convertImagesTo?: ImageConversionType;
 }
 
 /**
  * A light wrapper around a `FileInput` that gives defaults for accepting images.
  *
  * Because changing image file types is a common use case, this input supports
- * converting files that come through it. See the `convertIncomingTo` prop.
+ * converting files that come through it. See the `convertImagesTo` prop.
  *
  * While this component tells the underlying input to only accept images, be aware
  * that setting what file types are accepted in HTML is more of a suggestion
@@ -45,19 +39,12 @@ export interface ImageFileInputProps extends FileInputProps {
  * file inputs are nearly impossible to control and this component is intended to be
  * as close to the native HTML input as possible, this component can't just filter out
  * non-images.
+ * 
+ * If you'd like a more complete and opinionated image file input, consider using
+ * `FullImageFileInput`.
  */
 export const ImageFileInput = forwardRef<HTMLInputElement, ImageFileInputProps>(
-  (
-    {
-      className,
-      onChangeFiles,
-      convertIncomingTo,
-      onConvertedFiles,
-      disabled,
-      ...otherProps
-    }: ImageFileInputProps,
-    ref
-  ) => {
+  ({ className, onChangeFiles, convertImagesTo, disabled, ...otherProps }: ImageFileInputProps, ref) => {
     const isMountedRef = useIsMountedRef();
 
     const [isConverting, setIsConverting] = useState(false);
@@ -67,20 +54,20 @@ export const ImageFileInput = forwardRef<HTMLInputElement, ImageFileInputProps>(
         className={buildClassName(className, 'jtjs-image-file-input')}
         accept="image/*"
         onChangeFiles={async (files, event) => {
-          onChangeFiles?.(files, event);
+          let updatedFiles = files;
 
-          if (!!convertIncomingTo) {
+          if (!!convertImagesTo) {
             setIsConverting(true);
 
-            const convertedFiles = await Promise.all(
-              files.map((file) => ImageUtil.convert(file, convertIncomingTo))
-            );
+            updatedFiles = await Promise.all(files.map((file) => ImageUtil.convert(file, convertImagesTo)));
 
             if (isMountedRef.current) {
               setIsConverting(false);
-
-              onConvertedFiles?.(convertedFiles);
             }
+          }
+
+          if (isMountedRef.current) {
+            onChangeFiles?.(updatedFiles, event);
           }
         }}
         disabled={disabled || isConverting}

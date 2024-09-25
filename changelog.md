@@ -1,8 +1,25 @@
 # 2.0.0
 
+An exciting update that brings a variety of new components to the library to aid in dealing with file uploads, particularly image uploads!
+
+Most exciting is the `FullImageFileInput`, which gives a robust image file upload interface out of the box. An awesome feature is the ability for its underlying `ImageFileInput` to convert incoming image files to different formats. That means that if your application needs to convert all images to something like `webp` (for better file sizes), the component can do that work for you! The feature is powered by `@jtjs/browser`'s `ImageUtil`.
+
 ## Breaking Changes
 
 - Package now only exports to ESM.
+
+## Updates
+
+### New Components
+
+- `Carousel`
+- `CarouselWithFullView`
+- `FileInput`
+- `FullImageFileInput`
+- `ImageCarouselWithFullView`
+- `ImageFileInput`
+- `LabelledFileInput`
+- `LabelledImageFileInput`
 
 # 1.7.1
 

@@ -1,16 +1,8 @@
-import {
-  ChangeEvent,
-  ComponentPropsWithRef,
-  ComponentPropsWithoutRef,
-  forwardRef
-} from 'react';
+import { ChangeEvent, ComponentPropsWithRef, ComponentPropsWithoutRef, forwardRef } from 'react';
 import { Option } from '../../../types';
 import { buildClassName } from '../../../util';
 
-export type SelectOption<T> = Option<
-  T,
-  Omit<ComponentPropsWithoutRef<'option'>, 'value' | 'children'>
->;
+export type SelectOption<T> = Option<T, Omit<ComponentPropsWithoutRef<'option'>, 'value' | 'children'>>;
 export interface SelectOptionGroup<T> {
   groupLabel: string;
   options: SelectOption<T>[];
@@ -28,10 +20,7 @@ export interface SelectProps extends ComponentPropsWithRef<'select'> {
    * @param optionValue - The value of the option that was selected from the dropdown.
    * @param event - The original simulated event.
    */
-  onChangeSelection?: (
-    optionValue: string,
-    event: ChangeEvent<HTMLSelectElement>
-  ) => void;
+  onChangeSelection?: (optionValue: string, event: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 /**
@@ -42,23 +31,12 @@ export interface SelectProps extends ComponentPropsWithRef<'select'> {
  * a `value` that's not `undefined`.
  */
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  (
-    {
-      options,
-      onChange,
-      onChangeSelection,
-      className,
-      children,
-      ...otherProps
-    }: SelectProps,
-    ref
-  ) => {
+  ({ options, onChange, onChangeSelection, className, children, ...otherProps }: SelectProps, ref) => {
     return (
       <select
         data-testid="select"
         className={buildClassName(className, 'jtjs-select')}
         onChange={(event) => {
-          console.log('JT calling onChange. Event:', event.target.value);
           onChangeSelection?.(event.target.value, event);
           onChange?.(event);
         }}
@@ -77,10 +55,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                   label={optionData.groupLabel}
                 >
                   {optionData.options.map((optionGroupOptionData) => (
-                    <OptionElement
-                      optionData={optionGroupOptionData}
-                      key={optionGroupOptionData.value}
-                    />
+                    <OptionElement optionData={optionGroupOptionData} key={optionGroupOptionData.value} />
                   ))}
                 </optgroup>
               ) : (
@@ -109,9 +84,7 @@ export function generateSelectOptions<T>(
   allowEmpty = false,
   allowEmptyAfterSelection = false
 ): NonNullable<SelectProps['options']> {
-  const includeEmpty =
-    allowEmpty &&
-    (allowEmptyAfterSelection !== false || !currentlySelectedValue);
+  const includeEmpty = allowEmpty && (allowEmptyAfterSelection !== false || !currentlySelectedValue);
 
   return includeEmpty
     ? [
@@ -129,12 +102,7 @@ const OptionElement = ({
   ...otherProps
 }: { optionData: SelectOption<any> } & ComponentPropsWithoutRef<'option'>) => {
   return (
-    <option
-      data-testid="select-option"
-      {...otherProps}
-      {...optionData.props}
-      value={optionData.value}
-    >
+    <option data-testid="select-option" {...otherProps} {...optionData.props} value={optionData.value}>
       {optionData.label}
     </option>
   );

@@ -1,0 +1,11 @@
+@import url('https://use.fontawesome.com/releases/v5.15.4/css/all.css');
+@import '@jtjs/theme';
+
+
+* {
+  font-family: sans-serif;
+}
+
+.width_full {
+  width: 100%;
+}

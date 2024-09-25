@@ -1,4 +1,3 @@
-// JSON for the test app found in src.
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -18,5 +17,5 @@
     /* Linting */
     "strict": true
   },
-  "include": ["src", "lib"]
+  "include": ["lib"]
 }

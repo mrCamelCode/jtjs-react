@@ -24,6 +24,10 @@ about those, just look at code completion for function names starting with `use`
 
 - [Button](#button)
 
+- [Carousel](#carousel)
+
+- [CarouselWithFullView](#carouselwithfullview)
+
 - [Checkbox](#checkbox)
 
 - [Collapsible](#collapsible)
@@ -38,11 +42,15 @@ about those, just look at code completion for function names starting with `use`
 
 - [EmailLink](#emaillink)
 
+- [FileInput](#fileinput)
+
 - [Flexbox](#flexbox)
 
 - [FormDialog](#formdialog)
 
 - [FormGroup](#formgroup)
+
+- [FullImageFileInput](#fullimagefileinput)
 
 - [Grid](#grid)
 
@@ -51,6 +59,10 @@ about those, just look at code completion for function names starting with `use`
 - [Heading](#heading)
 
 - [Icon](#icon)
+
+- [ImageCarouselWithFullView](#imagecarouselwithfullview)
+
+- [ImageFileInput](#imagefileinput)
 
 - [InlineFeedbackMessage](#inlinefeedbackmessage)
 
@@ -65,6 +77,10 @@ about those, just look at code completion for function names starting with `use`
 - [LabelledCheckboxGroup](#labelledcheckboxgroup)
 
 - [LabelledColorInput](#labelledcolorinput)
+
+- [LabelledFileInput](#labelledfileinput)
+
+- [LabelledImageFileInput](#labelledimagefileinput)
 
 - [LabelledInput](#labelledinput)
 
@@ -227,6 +243,213 @@ as variables scoped to the button. The variables are `--jtjs-mouse-pos-x` and `-
 
 @param mousePosition - The current mouse position, relative to the bounding box of the button. Coordinates of (-1, -1)
 imply that the mouse is no longer over the button.
+
+
+
+
+## `Carousel`
+[Components ⬆️](#components)
+### Description
+A generic container for a series of items. The carousel displays the provided
+`items` horizontally, rendering according to the `renderItem` prop. By default,
+horizontal overflow is handled automatically and the carousel has no wrapping.
+If you want to control the maximum width of the carousel, consider passing `style`
+or using CSS.
+
+The user may use their mouse (or use keyboard navigation and the Space/Enter keys) to select
+items in the carousel. The `onChangeActiveItem` prop may be used to hook into the
+active item changing.
+
+This component may be controlled or uncontrolled. Pass something other than `undefined` to
+`activeItem` to control the component.
+
+The component resolves to a `Flexbox`, and each item is wrapped in a container
+with the class `jtjs-carousel-item-container`. If the item is the currently-selected
+item in the carousel, its container will additionally have the `jtjs-carousel-active-item`
+class.
+### Props
+`direction?: union` - (Optional, defaults to `row`) The direction that the contents of the Flexbox
+flow.
+
+
+`reverseDirection?: boolean` - (Optional, defaults to `false`) Whether the flow direction of the Flexbox's
+contents should be reversed.
+
+
+`horizontalAlignment?: union`
+
+
+`verticalAlignment?: union`
+
+
+`wrap?: boolean` - (Optional, defaults to `false`) Whether the contents of the Flexbox should
+wrap.
+
+
+`reverseWrap?: boolean`
+
+
+`spacing?: string` - (Optional, defaults to `0.5rem`) How much space to put between the contents of
+the Flexbox.
+
+
+`items: Array`
+
+
+`renderItem: signature` - Determines how the item is rendered for the user to see.
+
+
+`getItemKey: signature` - Determines the key of the item
+
+
+`activeItem?: union` - The currently active item. Pass if you want to control the component.
+
+`null` can be used when there is no currently active item, but you'd still
+like to control the component.
+
+
+`defaultActiveItem?: T` - The item that's active by default.
+
+This only has an effect when the component
+is uncontrolled. If you want to control the component and have a default,
+just set `activeItem`'s first value to the desired default.
+
+
+`onChangeActiveItem?: signature` - Callback for when the user attempts to change the active item.
+
+@param newItem - The item that should now be the active item, or null
+if they're clearing the currently active item by selecting the currently
+active item again.
+
+
+`getItemContainerProps?: signature` - A useful iteratee to have finer control over the props that get passed to
+the containers that wrap each item in the carousel.
+
+@returns The props for the container that wraps each item in the carousel.
+
+
+`areItemsEqual?: signature = (item1, item2) => item1 === item2` - (Optional, defaults to a function that determines whether `item1 === item2`)
+Allows you to customize how the carousel understands that two items are the same.
+This function is how the carousel determines when the active item changes.
+
+This function can be useful if the items in your carousel are complex. For example,
+you may want two objects to be equivalent if they have the same ID rather than
+checking that they're the same reference.
+
+@param item1
+@param item2
+
+@returns Whether the two items are equal.
+
+
+
+
+## `CarouselWithFullView`
+[Components ⬆️](#components)
+### Description
+A variant of the {@link Carousel} that additionally has an area
+where the active item displays in a full view.
+
+For example, in the case of an image carousel, you may produce a
+small thumbnail image for `renderItem`. For `renderFullView` you
+may produce a larger version of the image.
+
+The component resolves to a `Flexbox` that has a container
+within it (with the `jtjs-carousel-full-view-area` class). Below that
+is a {@link Carousel}.
+
+Because this component is logically a composed extension of a {@link Carousel},
+all props go to the underlying carousel. If you want to pass props to the
+outermost container, you can use the `containerProps` prop. If you want to pass
+props to the container for the full view, you can use the `fullViewAreaProps` prop.
+### Props
+`direction?: union` - (Optional, defaults to `row`) The direction that the contents of the Flexbox
+flow.
+
+
+`reverseDirection?: boolean` - (Optional, defaults to `false`) Whether the flow direction of the Flexbox's
+contents should be reversed.
+
+
+`horizontalAlignment?: union`
+
+
+`verticalAlignment?: union`
+
+
+`wrap?: boolean` - (Optional, defaults to `false`) Whether the contents of the Flexbox should
+wrap.
+
+
+`reverseWrap?: boolean`
+
+
+`spacing?: string` - (Optional, defaults to `0.5rem`) How much space to put between the contents of
+the Flexbox.
+
+
+`items: Array`
+
+
+`renderItem: signature` - Determines how the item is rendered for the user to see.
+
+
+`getItemKey: signature` - Determines the key of the item
+
+
+`activeItem?: union` - The currently active item. Pass if you want to control the component.
+
+`null` can be used when there is no currently active item, but you'd still
+like to control the component.
+
+
+`defaultActiveItem?: T` - The item that's active by default.
+
+This only has an effect when the component
+is uncontrolled. If you want to control the component and have a default,
+just set `activeItem`'s first value to the desired default.
+
+
+`onChangeActiveItem?: signature` - Callback for when the user attempts to change the active item.
+
+@param newItem - The item that should now be the active item, or null
+if they're clearing the currently active item by selecting the currently
+active item again.
+
+
+`getItemContainerProps?: signature` - A useful iteratee to have finer control over the props that get passed to
+the containers that wrap each item in the carousel.
+
+@returns The props for the container that wraps each item in the carousel.
+
+
+`areItemsEqual?: signature` - (Optional, defaults to a function that determines whether `item1 === item2`)
+Allows you to customize how the carousel understands that two items are the same.
+This function is how the carousel determines when the active item changes.
+
+This function can be useful if the items in your carousel are complex. For example,
+you may want two objects to be equivalent if they have the same ID rather than
+checking that they're the same reference.
+
+@param item1
+@param item2
+
+@returns Whether the two items are equal.
+
+
+`renderFullView: signature`
+
+
+`renderPlaceholderFullView?: signature` - Allows you to render something when there's no active item. If this
+isn't specified, nothing is rendered.
+
+@returns The element to render when there's no active item.
+
+
+`containerProps?: FlexboxProps = {}`
+
+
+`fullViewAreaProps?: FlexboxProps = {}`
 
 
 
@@ -460,6 +683,35 @@ disabled with `disableExternalNewTab`.
 
 
 
+## `FileInput`
+[Components ⬆️](#components)
+### Description
+A wrapper for the base input component with a default `type` of `"file"`. Useful
+for when you want to accept a file from the user.
+
+Just like a regular file input, if you'd like to allow the user to pass multiple
+files, set the `multiple` prop.
+
+Note that file inputs in HTML are nearly impossible to control. The only valid
+value for `value` is an empty string, and that's for wiping the input. The `files`
+attribute is intended to be immutable. Because of this, you should treat this input
+as uncontrolled. 
+
+If you'd like a more controlled solution, consider using this component as a base to
+create a file input that tracks its own state. This is the approach `FullImageFileInput` uses.
+### Props
+`onChangeFiles?: signature` - Callback for when the user uploads files.
+
+Note that because of how HTML file inputs work, this callback is _not_
+additive. That is, if the user uploads 1 file, then uploads 2 files, the
+second invocation of this callback will just contain the 2 new files.
+
+@param files - The files the user uploaded.
+@param event - The original synthetic event.
+
+
+
+
 ## `Flexbox`
 [Components ⬆️](#components)
 ### Description
@@ -538,6 +790,100 @@ If this is `false`, each item in the group will be on its own line.
 
 
 `info?: string`
+
+
+
+
+## `FullImageFileInput`
+[Components ⬆️](#components)
+### Description
+An input intended to gather image files from the user. Unlike other more base components like `ImageFileInput`,
+this input is more complex and strives to be a more complete and easy-to-use solution rather than a simple wrapper. The input
+resolves to an outer `Flexbox` that contains a `LabelledImageFileInput`, an `ImageCarouselWithFullView`, and a `Button` for
+removing uploaded images. Because this component is logically its `LabelledImageFileInput`, its root props reflect that.
+You may pass almost anything you could pass to a `LabelledImageFileInput` to this component.
+If you pass a `ref` to this component, it will go down to the underlying `input`.
+The props for the other items that make up this component are exposed via
+other props, like `containerProps` for example.
+
+The input provides a means to upload image files and, unlike a base file input, this input guarantees that it only 
+accepts image files. The `File[]` exposed via the `onChangeImageFiles` prop is always guaranteed to only include
+files whose type matches `image/*`. 
+
+Image files that are successfully added
+are shown in a carousel with full view so the user may peruse what they've uploaded. When looking at the full view
+of an uploaded image, the user is provided a button to remove that image from the input.
+
+Via the `multiple` prop, the input may be configured to accept one or several images.
+Note that when `multiple` is enabled, the input operates slightly differently than a base file input. Instead
+of new uploads clearing any existing uploads, this input will instead _add_ new uploads to what has been uploaded before.
+
+When `multiple` is enabled, the full `ImageCarouselWithFullView` that this component contains is used. All images that
+have been uploaded may be browsed and viewed. When `multiple` is _disabled_, the carousel is hidden and the component
+always shows the full view of the uploaded image, if there is one. If no image has been uploaded (or the uploaded image
+is removed), the default placeholder for `ImageCarouselWithFullView` is displayed.
+
+Unlike a base file input, this input may be controlled. If you'd like to control it, pass something other than `undefined`
+to the `value` prop. Controlling the input can be useful for things like initial form values and being able to
+wipe the input.
+
+@example ### Accept a single image
+```tsx
+<FullImageFileInput />
+```
+
+@example ### Accept multiple images
+```tsx
+<FullImageFileInput multiple />
+```
+
+@example ### Convert images to WEBP
+```tsx
+<FullImageFileInput convertImagesTo={ImageConversionType.Webp} />
+```
+
+@example ### Control the component and convert incoming uploads to PNG
+```tsx
+const [pngs, setPngs] = useState<File[]>([]);
+
+<FullImageFileInput
+  value={pngs}
+  onChangeImageFiles={setPngs}
+  convertImagesTo={ImageConversionType.Png}
+/>
+```
+### Props
+`value?: Array` - The current value for the input. Can be used to control the input.
+
+
+`defaultValue?: Array = []` - The default value the input should have.
+
+Note that this only works when the component is uncontrolled. If controlling the component, set a default by
+just having the initial `value` be your default.
+
+
+`onChangeImageFiles?: signature` - Callback for whenever files are uploaded or removed from the input. Unlike a bare `ImageFileInput`,
+the files provided are guaranteed to only be images.
+
+@param files - The files tracked by the input. Unlike a bare `ImageFileInput`,
+this array is guaranteed to only contain image files. If `multiple` was passed to the
+input, this will be _all_ files the input has, not just the most recently uploaded ones.
+
+
+`containerProps?: FlexboxProps = {}` - Props for the outer container of the input.
+
+
+`imageCarouselWithFullViewProps?: Omit = {}` - Props for the {@link ImageCarouselWithFullView} the input uses to display previews of the uploaded images.
+
+
+`removeButtonText?: string = 'Remove'` - (Optional, defaults to `'Remove'`) The text for the button that appears when an image is selected for preview
+in the full view carousel.
+
+
+`removeButtonProps?: Omit = {}`
+
+
+`labelProps?: ?? = {}`
 
 
 
@@ -796,6 +1142,105 @@ in your project, try verifying and changing the `iconType`.
 
 
 
+## `ImageCarouselWithFullView`
+[Components ⬆️](#components)
+### Description
+A variant of the {@link CarouselWithFullView} intended to display images.
+
+Accepts an array of image props where the `src` is required (and the `alt` is highly recommended)
+for its `items`. The `src` should be unique among its siblings; you shouldn't have the same image
+included in the carousel more than once, as the `src` is the default for generating
+the keys. Should you find yourself in a situation where you must list the same image multiple
+times, pass your own `getItemKey` prop to generate unique and stable keys for your
+data set.
+
+The component displays small, thumbnail
+versions of the images in a carousel. The full view defaults to a larger view
+of the image. The placeholder for the full view defaults to a `filled` {@link Contentbox}.
+
+All defaults may be overridden by passing your own props.
+
+Because images are wont to be of many different sizes, `height`
+is available as a prop to easily manage controlling the area the image carousel takes
+up. The input and carousel will take up 100% of the width they have available.
+
+When an image is in full view, it will be centered in the available
+space, as the aspect ratio of the image is respected by default.
+This approach prevents the jarring experience of varying sizes of images causing the
+page to resize constantly by ensuring the component takes up a consistent size regardless
+of the images being viewed.
+
+If you need the carousel to adjust `height` based on the screen size, consider using the
+`useBreakpoint` hook.
+### Props
+`height?: string = '20rem'` - (Optional, defaults to 20rem) Convenience that controls the height of the preview and its container
+to make sure the image preview doesn't exceed
+a certain height.
+
+
+`renderItem?: CarouselWithFullViewProps['renderItem']`
+
+
+`getItemKey?: CarouselWithFullViewProps['getItemKey']`
+
+
+`renderFullView?: CarouselWithFullViewProps['renderFullView']`
+
+
+`containerProps?: ?? = {}`
+
+
+
+
+## `ImageFileInput`
+[Components ⬆️](#components)
+### Description
+A light wrapper around a `FileInput` that gives defaults for accepting images.
+
+Because changing image file types is a common use case, this input supports
+converting files that come through it. See the `convertImagesTo` prop.
+
+While this component tells the underlying input to only accept images, be aware
+that setting what file types are accepted in HTML is more of a suggestion
+than something the browser will enforce. Even if an input says it only accepts
+images, the user can still provide non-images. You should expect that the files
+that come through the input are potentially not images. Setting the accepted file
+type is more for improving UX when the OS' file browser window appears. Because
+file inputs are nearly impossible to control and this component is intended to be
+as close to the native HTML input as possible, this component can't just filter out
+non-images.
+
+If you'd like a more complete and opinionated image file input, consider using
+`FullImageFileInput`.
+### Props
+`onChangeFiles?: signature` - Callback for when the user uploads files.
+
+Note that because of how HTML file inputs work, this callback is _not_
+additive. That is, if the user uploads 1 file, then uploads 2 files, the
+second invocation of this callback will just contain the 2 new files.
+
+@param files - The files the user uploaded.
+@param event - The original synthetic event.
+
+
+`convertImagesTo?: ImageConversionType` - Whether the input should create converted versions of all valid files
+passed to it. Conversion is an async process and the input will be
+disabled while it's working.
+
+Conversion is useful if your system prefers a particular image file type.
+For example, `webp` can be preferable because of how small it is for
+the same perceptible visual quality of something like `png`.
+
+Note that file type acceptance in HTML is more of a suggestion than something
+the browser enforces. If the user provides a non-image file, the conversion
+will just output the file they provided unchanged.
+
+When the conversion is complete, `onChangeFiles` will be invoked with the results
+of the conversion.
+
+
+
+
 ## `InlineFeedbackMessage`
 [Components ⬆️](#components)
 ### Description
@@ -915,6 +1360,94 @@ want to default a controlled group, just set your `value`'s initial value to be 
 @param color - The color, as a hex string. Note that browsers do not support an alpha channel
 for the color input.
 @param event - The original event.
+
+
+`label?: string`
+
+
+`labelPosition?: LabelPosition` - What position the label text appears relative to the input.
+
+
+`labelProps?: LabelProps = {}`
+
+
+`labelTextProps?: InlineTextProps`
+
+
+`error?: string`
+
+
+`warn?: string`
+
+
+`info?: string`
+
+
+
+
+## `LabelledFileInput`
+[Components ⬆️](#components)
+### Props
+`onChangeFiles?: signature` - Callback for when the user uploads files.
+
+Note that because of how HTML file inputs work, this callback is _not_
+additive. That is, if the user uploads 1 file, then uploads 2 files, the
+second invocation of this callback will just contain the 2 new files.
+
+@param files - The files the user uploaded.
+@param event - The original synthetic event.
+
+
+`label?: string`
+
+
+`labelPosition?: LabelPosition` - What position the label text appears relative to the input.
+
+
+`labelProps?: LabelProps = {}`
+
+
+`labelTextProps?: InlineTextProps`
+
+
+`error?: string`
+
+
+`warn?: string`
+
+
+`info?: string`
+
+
+
+
+## `LabelledImageFileInput`
+[Components ⬆️](#components)
+### Props
+`onChangeFiles?: signature` - Callback for when the user uploads files.
+
+Note that because of how HTML file inputs work, this callback is _not_
+additive. That is, if the user uploads 1 file, then uploads 2 files, the
+second invocation of this callback will just contain the 2 new files.
+
+@param files - The files the user uploaded.
+@param event - The original synthetic event.
+
+
+`convertImagesTo?: ImageConversionType` - Whether the input should create converted versions of all valid files
+passed to it. Conversion is an async process and the input will be
+disabled while it's working.
+
+Conversion is useful if your system prefers a particular image file type.
+For example, `webp` can be preferable because of how small it is for
+the same perceptible visual quality of something like `png`.
+
+Note that file type acceptance in HTML is more of a suggestion than something
+the browser enforces. If the user provides a non-image file, the conversion
+will just output the file they provided unchanged.
+
+When the conversion is complete, `onChangeFiles` will be invoked with the results
+of the conversion.
 
 
 `label?: string`

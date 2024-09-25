@@ -1,34 +1,19 @@
 import { forwardRef } from 'react';
-import {
-  LabelledProps,
-  pickLabelledProps,
-  withoutLabelledProps,
-} from '../../../types';
-import { ImageFileInput, ImageFileInputProps } from '../base';
+import { LabelledProps, pickLabelledProps, withoutLabelledProps } from '../../../types/labelled.props';
+import { buildClassName } from '../../../util/util-functions';
+import { ImageFileInput, ImageFileInputProps } from '../base/ImageFileInput';
 import { BaseLabelledInput } from './BaseLabelledInput';
-import { buildClassName } from '../../../util';
 
-export interface LabelledImageFileInputProps
-  extends ImageFileInputProps,
-    LabelledProps {}
+export interface LabelledImageFileInputProps extends ImageFileInputProps, LabelledProps {}
 
-export const LabelledImageFileInput = forwardRef<
-  HTMLInputElement,
-  LabelledImageFileInputProps
->(
+export const LabelledImageFileInput = forwardRef<HTMLInputElement, LabelledImageFileInputProps>(
   (
-    {
-      labelProps: { className: labelClassName, ...otherLabelProps } = {},
-      ...otherProps
-    }: LabelledImageFileInputProps,
+    { labelProps: { className: labelClassName, ...otherLabelProps } = {}, ...otherProps }: LabelledImageFileInputProps,
     ref
   ) => {
     return (
       <BaseLabelledInput
-        className={buildClassName(
-          labelClassName,
-          'jtjs-labelled-image-file-input'
-        )}
+        className={buildClassName(labelClassName, 'jtjs-labelled-image-file-input')}
         {...pickLabelledProps(otherProps)}
         {...otherLabelProps}
       >

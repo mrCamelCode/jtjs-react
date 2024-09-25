@@ -1,8 +1,12 @@
-import { existsSync } from 'fs';
-import { readFile, writeFile } from 'fs/promises';
-import { exit } from 'process';
-import { Documentation } from 'react-docgen';
-import { PropDescriptor } from 'react-docgen/dist/Documentation';
+/**
+ * Creates a markdown document from the output react-docgen.
+ *
+ * Requires Deno to run.
+ */
+
+import { exists } from 'https://deno.land/std@0.91.0/fs/mod.ts';
+import { Documentation } from 'npm:react-docgen';
+import { PropDescriptor } from 'npm:react-docgen/dist/Documentation';
 
 type Section = string[];
 type Sections = Section[];
@@ -11,24 +15,23 @@ main();
 
 async function main() {
   try {
-    const { reactDocGenOutputFilePath, outputFilePath } = parseArgs();
+    const { reactDocGenOutputFilePath, outputFilePath } = parseArguments();
 
     const md = await getMarkdown(reactDocGenOutputFilePath);
 
-    writeFile(`${outputFilePath}.md`, md, {
-      encoding: 'utf-8',
-    });
+    await Deno.writeFile(`${outputFilePath}.md`, new TextEncoder().encode(md));
   } catch (error) {
     console.error(`Failed to generate MD from docs: ${error}`);
-    exit(-1);
+
+    Deno.exit(-1);
   }
 }
 
-function parseArgs(): {
+function parseArguments(): {
   reactDocGenOutputFilePath: string;
   outputFilePath: string;
 } {
-  const [, , reactDocGenOutputFilePath, outputFilePath] = process.argv;
+  const [reactDocGenOutputFilePath, outputFilePath] = Deno.args;
 
   if (!reactDocGenOutputFilePath) {
     throw new Error(
@@ -49,9 +52,9 @@ function parseArgs(): {
 }
 
 async function getMarkdown(reactDocGenOutputFilePath: string): Promise<string> {
-  const docSections = parseDocumentationToSections(
-    await getDocumentation(reactDocGenOutputFilePath)
-  ).sort(compareSectionsAlphabetically);
+  const docSections = parseDocumentationToSections(await getDocumentation(reactDocGenOutputFilePath)).sort(
+    compareSectionsAlphabetically
+  );
 
   return [
     `**Disclaimer**: These docs are auto-generated from data produced by
@@ -77,23 +80,17 @@ about those, just look at code completion for function names starting with \`use
   ].join('');
 }
 
-async function getDocumentation(
-  reactDocGenOutputFilePath: string
-): Promise<Documentation[]> {
-  if (!existsSync(reactDocGenOutputFilePath)) {
+async function getDocumentation(reactDocGenOutputFilePath: string): Promise<Documentation[]> {
+  if (!(await exists(reactDocGenOutputFilePath))) {
     throw new Error(
       `The file for the react-docgen output file at path: "${reactDocGenOutputFilePath}" does not exist.`
     );
   }
 
   try {
-    const reactDocGenOutput = await readFile(reactDocGenOutputFilePath, {
-      encoding: 'utf-8',
-    });
+    const reactDocGenOutput = new TextDecoder().decode(await Deno.readFile(reactDocGenOutputFilePath));
 
-    return Object.values(
-      JSON.parse(reactDocGenOutput)
-    ).flat() as Documentation[];
+    return Object.values(JSON.parse(reactDocGenOutput)).flat() as Documentation[];
   } catch (error) {
     throw new Error(`Could not parse the react-docgen output file: ${error}`);
   }
@@ -108,9 +105,7 @@ function parseDocumentationToSections(docs: Documentation[]): Sections {
     return [
       `## \`${displayName}\``,
       description ? ['### Description', description].join('\n') : '',
-      propsLines.length > 0
-        ? ['### Props', propsLines.join('\n')].join('\n')
-        : '',
+      propsLines.length > 0 ? ['### Props', propsLines.join('\n')].join('\n') : '',
       '\n',
     ].filter(Boolean);
   };
@@ -157,9 +152,7 @@ function getSectionNames(sections: Sections): string[] {
 function getTableOfContentsLines(sections: Sections): string[] {
   return [
     '# Components',
-    ...getSectionNames(sections).map(
-      (sectionName) => `- [${sectionName}](#${sectionName.toLowerCase()})\n`
-    ),
+    ...getSectionNames(sections).map((sectionName) => `- [${sectionName}](#${sectionName.toLowerCase()})\n`),
   ];
 }
 
@@ -171,10 +164,7 @@ function addTableOfContentsLinkToSection(section: Section): Section {
   return [sectionHeader, link, ...restOfSection];
 }
 
-function compareSectionsAlphabetically(
-  sectionA: Section,
-  sectionB: Section
-): -1 | 0 | 1 {
+function compareSectionsAlphabetically(sectionA: Section, sectionB: Section): -1 | 0 | 1 {
   const [sectionAHeader] = sectionA;
   const [sectionBHeader] = sectionB;
 
