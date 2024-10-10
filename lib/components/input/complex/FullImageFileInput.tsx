@@ -93,22 +93,22 @@ function getUpdatedFilesArray(currentFiles: File[], newFiles: File[], isAdditive
  * to the `value` prop. Controlling the input can be useful for things like initial form values and being able to
  * wipe the input.
  *
- * @example ### Accept a single image
+ * @example Accept a single image
  * ```tsx
  * <FullImageFileInput />
  * ```
  *
- * @example ### Accept multiple images
+ * @example Accept multiple images
  * ```tsx
  * <FullImageFileInput multiple />
  * ```
  *
- * @example ### Convert images to WEBP
+ * @example Convert images to WEBP
  * ```tsx
  * <FullImageFileInput convertImagesTo={ImageConversionType.Webp} />
  * ```
  *
- * @example ### Control the component and convert incoming uploads to PNG
+ * @example Control the component and convert incoming uploads to PNG
  * ```tsx
  * const [pngs, setPngs] = useState<File[]>([]);
  *

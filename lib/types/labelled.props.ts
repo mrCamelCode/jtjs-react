@@ -27,18 +27,8 @@ export interface LabelledProps {
  *
  * @returns Just the `LabelledProps` out of the provided props.
  */
-export function pickLabelledProps<T extends LabelledProps>(
-  props: T
-): LabelledProps {
-  const {
-    label,
-    labelPosition,
-    labelProps,
-    labelTextProps,
-    error,
-    warn,
-    info,
-  } = props;
+export function pickLabelledProps<T extends LabelledProps>(props: T): LabelledProps {
+  const { label, labelPosition, labelProps, labelTextProps, error, warn, info } = props;
 
   return {
     label,
@@ -51,20 +41,10 @@ export function pickLabelledProps<T extends LabelledProps>(
   };
 }
 
-export function withoutLabelledProps<T extends LabelledProps>(
-  props: T
-): Omit<T, keyof LabelledProps> {
+export function withoutLabelledProps<T extends LabelledProps>(props: T): Omit<T, keyof LabelledProps> {
   const newProps = { ...props };
   (
-    [
-      'label',
-      'labelPosition',
-      'labelProps',
-      'labelTextProps',
-      'error',
-      'warn',
-      'info',
-    ] as (keyof LabelledProps)[]
+    ['label', 'labelPosition', 'labelProps', 'labelTextProps', 'error', 'warn', 'info'] as (keyof LabelledProps)[]
   ).forEach((key) => {
     delete newProps[key];
   });

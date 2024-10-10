@@ -23,8 +23,7 @@
     "build:types": "tsc --project tsconfig.build.json",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest",
-    "docgen": "npx react-docgen -o ./react-docgen-output.json ./lib/**/*.tsx --pretty && deno run --allow-read --allow-write ./scripts/gen-md-from-react-docgen.script.ts ./react-docgen-output.json ./README && npx rimraf ./react-docgen-output.json"
+    "test": "vitest"
   },
   "peerDependencies": {
     "@jtjs/browser": "^2.0.0",
@@ -36,7 +35,6 @@
     "@eslint/js": "^9.9.0",
     "@jtjs/theme": "^2.0.0",
     "@modular-forms/react": "^0.9.0",
-    "@react-docgen/cli": "^2.0.3",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",
@@ -49,7 +47,6 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "happy-dom": "^15.7.4",
-    "react-docgen": "^7.0.3",
     "react-hook-form": "^7.53.0",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",

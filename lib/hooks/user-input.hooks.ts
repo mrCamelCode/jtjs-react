@@ -70,8 +70,9 @@ export interface ChordInputOptions {
  * Registers an event listener that will be invoked the moment the specified keys are
  * all pressed.
  *
- * @param key - The key to listen for.
+ * @param keys - The key to listen for.
  * @param handler - The handler to invoke when the specified key is pressed.
+ * @param options - Additional options to customize the chord processing.
  */
 export function useChordDown(
   keys: KeyName[],
