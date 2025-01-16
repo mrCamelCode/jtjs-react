@@ -81,11 +81,9 @@ describe('Collapsible', () => {
 
       expect(isCollapsed).toBe(false);
 
-      await act(async () => {
-        const button = screen.getByTestId('collapsible-collapse-button');
-
-        await userEvent.type(button, '{enter}');
-      });
+      const button = screen.getByTestId('collapsible-collapse-button');
+      button.focus();
+      await userEvent.keyboard('{Enter}');
 
       expect(isCollapsed).toBe(true);
     });
@@ -165,11 +163,9 @@ describe('Collapsible', () => {
     test('changes collapsed state when the button in the header is focused and the user presses Enter', async () => {
       renderCollapsible();
 
-      await act(async () => {
-        const button = screen.getByTestId('collapsible-collapse-button');
-
-        await userEvent.type(button, '{enter}');
-      });
+      const button = screen.getByTestId('collapsible-collapse-button');
+      button.focus();
+      await userEvent.keyboard('{Enter}');
 
       expect(screen.queryByText(contentText)).toBeNull();
     });

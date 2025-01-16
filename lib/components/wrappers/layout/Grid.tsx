@@ -1,4 +1,4 @@
-import { CSSProperties, ComponentPropsWithRef, forwardRef } from 'react';
+import { CSSProperties, ComponentPropsWithRef } from 'react';
 import { HorizontalAlignment, VerticalAlignment } from '../../../types/model';
 import { buildClassName } from '../../../util/util-functions';
 
@@ -26,10 +26,7 @@ export type GridLayoutSizingObject = {
    */
   rowSizing: string;
 };
-export type GridLayout =
-  | GridLayoutString
-  | GridLayoutArray
-  | GridLayoutSizingObject;
+export type GridLayout = GridLayoutString | GridLayoutArray | GridLayoutSizingObject;
 
 export interface GridProps extends ComponentPropsWithRef<'div'> {
   /**
@@ -223,49 +220,43 @@ export interface GridProps extends ComponentPropsWithRef<'div'> {
  * The core of this component's behaviour is driven by its `layout` prop, but its other props can also aid
  * you in establishing a gridded layout efficiently.
  */
-export const Grid = forwardRef<HTMLDivElement, GridProps>(
-  (
-    {
-      className,
-      style,
-      layout,
-      spacing,
-      rowSpacing,
-      columnSpacing,
-      horizontalAlignment,
-      verticalAlignment,
-      cellHorizontalAlignment,
-      cellVerticalAlignment,
-      flow = 'row',
-      ...otherProps
-    }: GridProps,
-    ref
-  ) => {
-    return (
-      <div
-        className={buildClassName(className, 'jtjs-grid')}
-        style={{
-          ...parseGridLayout(layout),
-          display: 'grid',
-          rowGap: rowSpacing ?? spacing,
-          columnGap: columnSpacing ?? spacing,
-          justifyContent: getAlignmentCssString(horizontalAlignment),
-          alignContent: getAlignmentCssString(verticalAlignment),
-          justifyItems: getAlignmentCssString(cellHorizontalAlignment),
-          alignItems: getAlignmentCssString(cellVerticalAlignment),
-          gridAutoFlow: flow,
-          ...style,
-        }}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+export const Grid = ({
+  ref,
+  className,
+  style,
+  layout,
+  spacing,
+  rowSpacing,
+  columnSpacing,
+  horizontalAlignment,
+  verticalAlignment,
+  cellHorizontalAlignment,
+  cellVerticalAlignment,
+  flow = 'row',
+  ...otherProps
+}: GridProps) => {
+  return (
+    <div
+      className={buildClassName(className, 'jtjs-grid')}
+      style={{
+        ...parseGridLayout(layout),
+        display: 'grid',
+        rowGap: rowSpacing ?? spacing,
+        columnGap: columnSpacing ?? spacing,
+        justifyContent: getAlignmentCssString(horizontalAlignment),
+        alignContent: getAlignmentCssString(verticalAlignment),
+        justifyItems: getAlignmentCssString(cellHorizontalAlignment),
+        alignItems: getAlignmentCssString(cellVerticalAlignment),
+        gridAutoFlow: flow,
+        ...style,
+      }}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};
 
-export function parseGridLayoutString(
-  layoutString: GridLayoutString
-): GridLayoutArray {
+export function parseGridLayoutString(layoutString: GridLayoutString): GridLayoutArray {
   const trimmedLayoutString = layoutString.trim();
   const [rawColumnSizing, ...rawRows] = trimmedLayoutString
     .split(/(\r\n|\r|\n)/gm)
@@ -283,9 +274,7 @@ export function parseGridLayoutString(
   return [columnSizing, ...rawRows.map(parseRawRow)];
 }
 
-export function parseGridLayoutArray(
-  layoutArray: GridLayoutArray
-): CSSProperties {
+export function parseGridLayoutArray(layoutArray: GridLayoutArray): CSSProperties {
   const [columnSizing, ...rows] = layoutArray;
 
   if (layoutArray.length <= 1) {
@@ -307,9 +296,7 @@ export function parseGridLayoutArray(
 
     return trimmed === '' ? '.' : trimmed;
   };
-  const gridTemplateColumns: CSSProperties['gridTemplateColumns'] = columnSizing
-    .map(treatSizingString)
-    .join(' ');
+  const gridTemplateColumns: CSSProperties['gridTemplateColumns'] = columnSizing.map(treatSizingString).join(' ');
 
   const gridTemplateRows: CSSProperties['gridTemplateRows'] = rows
     .map(([rowSizing]) => treatSizingString(rowSizing))
@@ -338,9 +325,7 @@ export function parseGridLayoutArray(
   };
 }
 
-export function parseGridLayoutObject(
-  layoutObj: GridLayoutSizingObject
-): CSSProperties {
+export function parseGridLayoutObject(layoutObj: GridLayoutSizingObject): CSSProperties {
   return {
     gridTemplateColumns: layoutObj.columnSizing,
     gridTemplateRows: layoutObj.rowSizing,
@@ -359,9 +344,7 @@ function parseGridLayout(layout?: GridLayout): CSSProperties {
   return {};
 }
 
-function getAlignmentCssString(
-  alignment?: HorizontalAlignment | VerticalAlignment
-): string | undefined {
+function getAlignmentCssString(alignment?: HorizontalAlignment | VerticalAlignment): string | undefined {
   switch (alignment) {
     case 'left':
     case 'top':

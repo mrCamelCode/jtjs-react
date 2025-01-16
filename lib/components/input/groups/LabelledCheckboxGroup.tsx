@@ -1,15 +1,6 @@
-import {
-  ChangeEvent,
-  ComponentPropsWithoutRef,
-  forwardRef,
-  useState,
-} from 'react';
+import { ChangeEvent, ComponentPropsWithoutRef, useState } from 'react';
 import { LabelPosition, LabelledProps, Option } from '../../../types';
 import { buildClassName } from '../../../util';
-import {
-  InlineFeedbackMessage,
-  InlineFeedbackMessageType,
-} from '../../structured-information/InlineFeedbackMessage';
 import { InlineText } from '../../text/InlineText';
 import { LabelledCheckbox, LabelledCheckboxProps } from '../labelled';
 import { FormGroup, FormGroupProps } from './FormGroup';
@@ -18,13 +9,7 @@ type CheckboxGroupValue = CheckboxOption['name'][];
 
 export interface CheckboxOption
   extends Omit<
-    Option<
-      undefined,
-      Omit<
-        LabelledCheckboxProps,
-        'onChangeChecked' | 'name' | 'id' | 'checked' | 'value' | 'label'
-      >
-    >,
+    Option<undefined, Omit<LabelledCheckboxProps, 'onChangeChecked' | 'name' | 'id' | 'checked' | 'value' | 'label'>>,
     'value'
   > {
   /**
@@ -69,97 +54,69 @@ export interface LabelledCheckboxGroupProps
  * Can be controlled or uncontrolled. If you intend to control the component, you must provide
  * a `value` that's not `undefined`.
  */
-export const LabelledCheckboxGroup = forwardRef<
-  HTMLFieldSetElement,
-  LabelledCheckboxGroupProps
->(
-  (
-    {
-      name,
-      options,
-      value,
-      defaultValue,
-      onChangeSelection,
-      className,
-      label = '',
-      labelPosition = LabelPosition.Before,
-      labelProps: { className: labelClassName, ...otherLabelProps } = {},
-      labelTextProps: {
-        className: labelTextClassName,
-        ...otherLabelTextProps
-      } = {},
-      ...otherProps
-    }: LabelledCheckboxGroupProps,
-    ref
-  ) => {
-    const [internalValue, setInternalValue] =
-      useState<typeof value>(defaultValue);
+export const LabelledCheckboxGroup = ({
+  ref,
+  name,
+  options,
+  value,
+  defaultValue,
+  onChangeSelection,
+  className,
+  label = '',
+  labelPosition = LabelPosition.Before,
+  labelProps: { className: labelClassName, ...otherLabelProps } = {},
+  labelTextProps: { className: labelTextClassName, ...otherLabelTextProps } = {},
+  ...otherProps
+}: LabelledCheckboxGroupProps) => {
+  const [internalValue, setInternalValue] = useState<typeof value>(defaultValue);
 
-    const isControlled = value !== undefined;
+  const isControlled = value !== undefined;
 
-    const getValue = () => {
-      return isControlled ? value : internalValue;
-    };
+  const getValue = () => {
+    return isControlled ? value : internalValue;
+  };
 
-    const handleChange: LabelledCheckboxProps['onChangeChecked'] = (
-      checked,
-      event
-    ) => {
-      const checkboxName = event.target.name;
+  const handleChange: LabelledCheckboxProps['onChangeChecked'] = (checked, event) => {
+    const checkboxName = event.target.name;
 
-      const updatedValue = checked
-        ? [...(getValue() ?? []), checkboxName]
-        : getValue()?.filter((name) => name !== checkboxName) ?? [];
+    const updatedValue = checked
+      ? [...(getValue() ?? []), checkboxName]
+      : getValue()?.filter((name) => name !== checkboxName) ?? [];
 
-      onChangeSelection?.(updatedValue, checkboxName, event);
+    onChangeSelection?.(updatedValue, checkboxName, event);
 
-      if (!isControlled) {
-        setInternalValue(updatedValue);
-      }
-    };
+    if (!isControlled) {
+      setInternalValue(updatedValue);
+    }
+  };
 
-    const labelMarkup = (
-      <legend
-        className={buildClassName(labelClassName, 'jtjs-checkbox-group-label')}
-        {...otherLabelProps}
-      >
-        <InlineText
-          className={buildClassName(labelTextClassName, 'jtjs-label-text')}
-          {...otherLabelTextProps}
-        >
-          {label}
-        </InlineText>
-      </legend>
-    );
+  const labelMarkup = (
+    <legend className={buildClassName(labelClassName, 'jtjs-checkbox-group-label')} {...otherLabelProps}>
+      <InlineText className={buildClassName(labelTextClassName, 'jtjs-label-text')} {...otherLabelTextProps}>
+        {label}
+      </InlineText>
+    </legend>
+  );
 
-    return (
-      <FormGroup
-        className={buildClassName(className, 'jtjs-checkbox-group')}
-        {...otherProps}
-        ref={ref}
-      >
-        {label !== undefined &&
-          labelPosition === LabelPosition.Before &&
-          labelMarkup}
-        {options.map(({ label: checkboxLabel, name: checkboxName, props }) => {
-          const id = `jtjs-checkbox-${checkboxLabel}`;
+  return (
+    <FormGroup className={buildClassName(className, 'jtjs-checkbox-group')} {...otherProps} ref={ref}>
+      {label !== undefined && labelPosition === LabelPosition.Before && labelMarkup}
+      {options.map(({ label: checkboxLabel, name: checkboxName, props }) => {
+        const id = `jtjs-checkbox-${checkboxLabel}`;
 
-          return (
-            <LabelledCheckbox
-              key={id}
-              {...props}
-              onChangeChecked={handleChange}
-              id={id}
-              name={checkboxName}
-              checked={!!getValue()?.includes(checkboxName)}
-              label={checkboxLabel}
-            />
-          );
-        })}
-        {label !== undefined &&
-          labelPosition === LabelPosition.After &&
-          labelMarkup}
-      </FormGroup>
-    );
-  }
-);
+        return (
+          <LabelledCheckbox
+            key={id}
+            {...props}
+            onChangeChecked={handleChange}
+            id={id}
+            name={checkboxName}
+            checked={!!getValue()?.includes(checkboxName)}
+            label={checkboxLabel}
+          />
+        );
+      })}
+      {label !== undefined && labelPosition === LabelPosition.After && labelMarkup}
+    </FormGroup>
+  );
+};

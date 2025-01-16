@@ -1,4 +1,3 @@
-import { forwardRef } from 'react';
 import { buildClassName } from '../../util';
 import { InlineText, InlineTextProps } from '../text';
 
@@ -18,37 +17,25 @@ export interface InlineFeedbackMessageProps extends InlineTextProps {
 /**
  * Feedback for the user. Useful in forms and in reaction to user actions.
  */
-export const InlineFeedbackMessage = forwardRef<
-  HTMLSpanElement,
-  InlineFeedbackMessageProps
->(
-  (
-    { className, messageType, ...otherProps }: InlineFeedbackMessageProps,
-    ref
-  ) => {
-    const getMessageTypeClass = () => {
-      switch (messageType) {
-        case InlineFeedbackMessageType.Error:
-          return 'jtjs-error';
-        case InlineFeedbackMessageType.Warn:
-          return 'jtjs-warn';
-        case InlineFeedbackMessageType.Info:
-          return 'jtjs-info';
-        default:
-          return '';
-      }
-    };
+export const InlineFeedbackMessage = ({ ref, className, messageType, ...otherProps }: InlineFeedbackMessageProps) => {
+  const getMessageTypeClass = () => {
+    switch (messageType) {
+      case InlineFeedbackMessageType.Error:
+        return 'jtjs-error';
+      case InlineFeedbackMessageType.Warn:
+        return 'jtjs-warn';
+      case InlineFeedbackMessageType.Info:
+        return 'jtjs-info';
+      default:
+        return '';
+    }
+  };
 
-    return (
-      <InlineText
-        className={buildClassName(
-          className,
-          'jtjs-inline-feedback-message',
-          getMessageTypeClass()
-        )}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+  return (
+    <InlineText
+      className={buildClassName(className, 'jtjs-inline-feedback-message', getMessageTypeClass())}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

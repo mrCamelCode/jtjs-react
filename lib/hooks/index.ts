@@ -1,4 +1,5 @@
 export * from './use-breakpoint.hook';
+export * from './use-fetched-data.hook';
 export * from './use-is-mounted-ref.hook';
 export * from './use-theme.hook';
 export * from './use-user-active.hook';

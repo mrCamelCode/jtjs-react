@@ -1,4 +1,4 @@
-import { ChangeEvent, ComponentPropsWithRef, ComponentPropsWithoutRef, forwardRef } from 'react';
+import { ChangeEvent, ComponentPropsWithRef, ComponentPropsWithoutRef } from 'react';
 import { Option } from '../../../types';
 import { buildClassName } from '../../../util';
 
@@ -30,43 +30,49 @@ export interface SelectProps extends ComponentPropsWithRef<'select'> {
  * Can be controlled or uncontrolled. If you intend to control the component, you must provide
  * a `value` that's not `undefined`.
  */
-export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ options, onChange, onChangeSelection, className, children, ...otherProps }: SelectProps, ref) => {
-    return (
-      <select
-        data-testid="select"
-        className={buildClassName(className, 'jtjs-select')}
-        onChange={(event) => {
-          onChangeSelection?.(event.target.value, event);
-          onChange?.(event);
-        }}
-        {...otherProps}
-        ref={ref}
-      >
-        {options
-          ? options.map((optionData) => {
-              const isOptionGroup = 'groupLabel' in optionData;
+export const Select = ({
+  ref,
+  options,
+  onChange,
+  onChangeSelection,
+  className,
+  children,
+  ...otherProps
+}: SelectProps) => {
+  return (
+    <select
+      data-testid="select"
+      className={buildClassName(className, 'jtjs-select')}
+      onChange={(event) => {
+        onChangeSelection?.(event.target.value, event);
+        onChange?.(event);
+      }}
+      {...otherProps}
+      ref={ref}
+    >
+      {options
+        ? options.map((optionData) => {
+            const isOptionGroup = 'groupLabel' in optionData;
 
-              return isOptionGroup ? (
-                <optgroup
-                  data-testid="select-option-group"
-                  key={optionData.groupLabel}
-                  {...optionData.optionGroupProps}
-                  label={optionData.groupLabel}
-                >
-                  {optionData.options.map((optionGroupOptionData) => (
-                    <OptionElement optionData={optionGroupOptionData} key={optionGroupOptionData.value} />
-                  ))}
-                </optgroup>
-              ) : (
-                <OptionElement optionData={optionData} key={optionData.value} />
-              );
-            })
-          : children}
-      </select>
-    );
-  }
-);
+            return isOptionGroup ? (
+              <optgroup
+                data-testid="select-option-group"
+                key={optionData.groupLabel}
+                {...optionData.optionGroupProps}
+                label={optionData.groupLabel}
+              >
+                {optionData.options.map((optionGroupOptionData) => (
+                  <OptionElement optionData={optionGroupOptionData} key={optionGroupOptionData.value} />
+                ))}
+              </optgroup>
+            ) : (
+              <OptionElement optionData={optionData} key={optionData.value} />
+            );
+          })
+        : children}
+    </select>
+  );
+};
 
 /**
  * Convenience function for generating your select options when you'd like to introduce the possibility of having

@@ -1,9 +1,4 @@
-import {
-  ComponentPropsWithRef,
-  ComponentPropsWithoutRef,
-  ReactNode,
-  forwardRef,
-} from 'react';
+import { ComponentPropsWithRef, ComponentPropsWithoutRef, ReactNode } from 'react';
 import { buildClassName } from '../../util';
 import { Text } from '../text';
 
@@ -25,8 +20,7 @@ export interface TableRow {
   tableCellProps?: ComponentPropsWithoutRef<'td'>;
 }
 
-export interface TableProps
-  extends Omit<ComponentPropsWithRef<'table'>, 'rows' | 'headers'> {
+export interface TableProps extends Omit<ComponentPropsWithRef<'table'>, 'rows' | 'headers'> {
   columnHeaders: TableColumnHeader[];
   /**
    * The title of the table. This should be a descriptive but short name describing
@@ -67,156 +61,141 @@ export interface TableProps
  * Provides a simple way to create tables, with the ability to greatly customize
  * when needed.
  */
-export const Table = forwardRef<HTMLTableElement, TableProps>(
-  (
-    {
-      className,
-      style,
-      title,
-      rows,
-      columnHeaders: headers,
-      children,
-      disableEmptyTag = false,
-      emptyTagText = 'No data available',
-      useVerticalColumnHeaders: useVerticalHeaders = false,
-      maxHeight = '',
-      ...otherProps
-    }: TableProps,
-    ref
-  ) => {
-    const generateTableFromRowData = () => {
-      if (!rows) {
-        return null;
-      }
-
-      return (
-        <>
-          {rows.map((row, rowIndex) => {
-            const { cells } = row;
-
-            if (cells.length !== headers.length) {
-              console.error(
-                `Table: Row with index ${rowIndex} has ${cells.length} cells, but there are ${headers.length} columns.`
-              );
-
-              return null;
-            }
-
-            return (
-              <tr key={rowIndex} {...row.tableRowProps}>
-                {cells.map((cellData, cellIndex) => {
-                  return (
-                    <td
-                      key={`${rowIndex}-${cellIndex}`}
-                      {...row.tableCellProps}
-                    >
-                      {cellData}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </>
-      );
-    };
-
-    let tableContents: ReactNode = null;
-    if (rows && rows.length > 0) {
-      tableContents = generateTableFromRowData();
-    } else if (children) {
-      tableContents = children;
-    } else if (!disableEmptyTag) {
-      tableContents = (
-        <tr>
-          <td colSpan={headers.length}>
-            <Text
-              className="jtjs-empty-table-tag"
-              style={{
-                opacity: 0.8,
-                textAlign: 'center',
-              }}
-              italic
-            >
-              {emptyTagText}
-            </Text>
-          </td>
-        </tr>
-      );
+export const Table = ({
+  ref,
+  className,
+  style,
+  title,
+  rows,
+  columnHeaders: headers,
+  children,
+  disableEmptyTag = false,
+  emptyTagText = 'No data available',
+  useVerticalColumnHeaders: useVerticalHeaders = false,
+  maxHeight = '',
+  ...otherProps
+}: TableProps) => {
+  const generateTableFromRowData = () => {
+    if (!rows) {
+      return null;
     }
 
     return (
-      <table
-        className={buildClassName(className, 'jtjs-table')}
+      <>
+        {rows.map((row, rowIndex) => {
+          const { cells } = row;
+
+          if (cells.length !== headers.length) {
+            console.error(
+              `Table: Row with index ${rowIndex} has ${cells.length} cells, but there are ${headers.length} columns.`
+            );
+
+            return null;
+          }
+
+          return (
+            <tr key={rowIndex} {...row.tableRowProps}>
+              {cells.map((cellData, cellIndex) => {
+                return (
+                  <td key={`${rowIndex}-${cellIndex}`} {...row.tableCellProps}>
+                    {cellData}
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </>
+    );
+  };
+
+  let tableContents: ReactNode = null;
+  if (rows && rows.length > 0) {
+    tableContents = generateTableFromRowData();
+  } else if (children) {
+    tableContents = children;
+  } else if (!disableEmptyTag) {
+    tableContents = (
+      <tr>
+        <td colSpan={headers.length}>
+          <Text
+            className="jtjs-empty-table-tag"
+            style={{
+              opacity: 0.8,
+              textAlign: 'center',
+            }}
+            italic
+          >
+            {emptyTagText}
+          </Text>
+        </td>
+      </tr>
+    );
+  }
+
+  return (
+    <table
+      className={buildClassName(className, 'jtjs-table')}
+      style={{
+        ...(maxHeight
+          ? {
+              maxHeight,
+              display: 'block',
+              overflowY: 'auto',
+              borderCollapse: 'separate',
+            }
+          : {}),
+        ...style,
+      }}
+      cellSpacing="0"
+      {...otherProps}
+      ref={ref}
+    >
+      <caption>{title}</caption>
+
+      <thead
         style={{
           ...(maxHeight
             ? {
-                maxHeight,
-                display: 'block',
-                overflowY: 'auto',
-                borderCollapse: 'separate',
+                position: 'sticky',
+                zIndex: 1,
+                top: 0,
               }
             : {}),
-          ...style,
         }}
-        cellSpacing="0"
-        {...otherProps}
-        ref={ref}
       >
-        <caption>{title}</caption>
+        <tr>
+          {headers.map((columnHeader, index) => {
+            const isComplexHeader =
+              typeof columnHeader === 'object' && columnHeader !== null ? 'header' in columnHeader : false;
 
-        <thead
-          style={{
-            ...(maxHeight
-              ? {
-                  position: 'sticky',
-                  zIndex: 1,
-                  top: 0,
-                }
-              : {}),
-          }}
-        >
-          <tr>
-            {headers.map((columnHeader, index) => {
-              const isComplexHeader =
-                typeof columnHeader === 'object' && columnHeader !== null
-                  ? 'header' in columnHeader
-                  : false;
+            const { header, headerProps: { style: tableHeaderStyle, ...otherHeaderProps } = {} } = isComplexHeader
+              ? (columnHeader as ComplexTableColumnHeader)
+              : ({
+                  header: columnHeader as ReactNode,
+                } as ComplexTableColumnHeader);
 
-              const {
-                header,
-                headerProps: {
-                  style: tableHeaderStyle,
-                  ...otherHeaderProps
-                } = {},
-              } = isComplexHeader
-                ? (columnHeader as ComplexTableColumnHeader)
-                : ({
-                    header: columnHeader as ReactNode,
-                  } as ComplexTableColumnHeader);
+            return (
+              <th
+                key={typeof columnHeader === 'string' ? columnHeader : index}
+                style={{
+                  ...tableHeaderStyle,
+                  ...(useVerticalHeaders
+                    ? {
+                        writingMode: 'vertical-rl',
+                      }
+                    : {}),
+                }}
+                {...otherHeaderProps}
+              >
+                {header}
+              </th>
+            );
+          })}
+        </tr>
+      </thead>
 
-              return (
-                <th
-                  key={typeof columnHeader === 'string' ? columnHeader : index}
-                  style={{
-                    ...tableHeaderStyle,
-                    ...(useVerticalHeaders
-                      ? {
-                          writingMode: 'vertical-rl',
-                        }
-                      : {}),
-                  }}
-                  {...otherHeaderProps}
-                >
-                  {header}
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-
-        <tbody>{tableContents}</tbody>
-      </table>
-    );
-  }
-);
+      <tbody>{tableContents}</tbody>
+    </table>
+  );
+};

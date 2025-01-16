@@ -1,4 +1,4 @@
-import { ChangeEvent, forwardRef } from 'react';
+import { ChangeEvent } from 'react';
 import { buildClassName } from '../../../util';
 import { Input, InputProps } from './Input';
 
@@ -17,23 +17,18 @@ export interface TextInputProps extends InputProps {
  * for single line text input. If you want to allow multiple lines of input, try
  * using `MultilineTextInput`.
  */
-export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  (
-    { className, onChange, onChangeText, ...otherProps }: TextInputProps,
-    ref
-  ) => {
-    return (
-      <Input
-        data-testid="text-input"
-        className={buildClassName(className, 'jtjs-text-input')}
-        type="text"
-        onChange={(event) => {
-          onChangeText?.(event.target.value, event);
-          onChange?.(event);
-        }}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+export const TextInput = ({ ref, className, onChange, onChangeText, ...otherProps }: TextInputProps) => {
+  return (
+    <Input
+      data-testid="text-input"
+      className={buildClassName(className, 'jtjs-text-input')}
+      type="text"
+      onChange={(event) => {
+        onChangeText?.(event.target.value, event);
+        onChange?.(event);
+      }}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

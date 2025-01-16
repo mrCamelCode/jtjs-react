@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, ReactNode, forwardRef } from 'react';
+import { ComponentPropsWithRef, ReactNode } from 'react';
 import { buildClassName } from '../../../util/util-functions';
 import { InlineText } from '../../text';
 import { LoadIndicator } from './LoadIndicator';
@@ -40,36 +40,24 @@ export interface LoadViewProps extends ComponentPropsWithRef<'div'> {
 /**
  * A wrapper that will show its content based on its `isLoading` prop.
  */
-export const LoadView = forwardRef<HTMLDivElement, LoadViewProps>(
-  (
-    {
-      isLoading,
-      children,
-      className,
-      loadingComponent = <LoadIndicator />,
-      useSimpleLoadIndicator = false,
-      ...otherProps
-    }: LoadViewProps,
-    ref
-  ) => {
-    const getLoadIndicator = (): ReactNode => {
-      return useSimpleLoadIndicator ? (
-        <SimpleLoadIndicator />
-      ) : (
-        loadingComponent
-      );
-    };
+export const LoadView = ({
+  ref,
+  isLoading,
+  children,
+  className,
+  loadingComponent = <LoadIndicator />,
+  useSimpleLoadIndicator = false,
+  ...otherProps
+}: LoadViewProps) => {
+  const getLoadIndicator = (): ReactNode => {
+    return useSimpleLoadIndicator ? <SimpleLoadIndicator /> : loadingComponent;
+  };
 
-    return (
-      <div
-        className={buildClassName(className, 'jtjs-load-view')}
-        {...otherProps}
-        ref={ref}
-      >
-        {isLoading ? getLoadIndicator() : children}
-      </div>
-    );
-  }
-);
+  return (
+    <div className={buildClassName(className, 'jtjs-load-view')} {...otherProps} ref={ref}>
+      {isLoading ? getLoadIndicator() : children}
+    </div>
+  );
+};
 
 const SimpleLoadIndicator = () => <InlineText>Loading...</InlineText>;

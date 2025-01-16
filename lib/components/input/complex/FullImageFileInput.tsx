@@ -1,4 +1,4 @@
-import { forwardRef, useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { buildClassName } from '../../../util/util-functions';
 import { Button, ButtonProps } from '../../controls/Button';
 import {
@@ -72,10 +72,10 @@ function getUpdatedFilesArray(currentFiles: File[], newFiles: File[], isAdditive
  * The props for the other items that make up this component are exposed via
  * other props, like `containerProps` for example.
  *
- * The input provides a means to upload image files and, unlike a base file input, this input guarantees that it only 
+ * The input provides a means to upload image files and, unlike a base file input, this input guarantees that it only
  * accepts image files. The `File[]` exposed via the `onChangeImageFiles` prop is always guaranteed to only include
- * files whose type matches `image/*`. 
- * 
+ * files whose type matches `image/*`.
+ *
  * Image files that are successfully added
  * are shown in a carousel with full view so the user may peruse what they've uploaded. When looking at the full view
  * of an uploaded image, the user is provided a button to remove that image from the input.
@@ -119,76 +119,99 @@ function getUpdatedFilesArray(currentFiles: File[], newFiles: File[], isAdditive
  * />
  * ```
  */
-export const FullImageFileInput = forwardRef<HTMLInputElement, FullImageFileInputProps>(
-  (
-    {
-      value,
-      defaultValue = [],
-      onChangeImageFiles,
-      multiple,
-      containerProps: { className: containerClassName, ...otherContainerProps } = {},
-      labelProps: { style: labelStyle, ...otherLabelProps } = {},
-      label = `Drop or browse image${multiple ? 's' : ''}...`,
-      imageCarouselWithFullViewProps: {
-        style: imageCarouselWithFullViewStyle,
-        onChangeActiveItem: imageCarouselWithFullViewOnChangeActiveItem,
-        ...otherImageCarouselWithFullViewProps
-      } = {},
-      removeButtonText = 'Remove',
-      removeButtonProps: {
-        style: removeButtonStyle,
-        className: removeButtonClassName,
-        onClick: removeButtonOnClick,
-        ...otherRemoveButtonProps
-      } = {},
-      ...otherProps
-    }: FullImageFileInputProps,
-    ref
-  ) => {
-    const [internalValue, setInternalValue] = useState<File[]>(defaultValue);
-    const [activeCarouselItem, setActiveCarouselItem] = useState<ImageCarouselItemType | null>(null);
+export const FullImageFileInput = ({
+  ref,
+  value,
+  defaultValue = [],
+  onChangeImageFiles,
+  multiple,
+  containerProps: { className: containerClassName, ...otherContainerProps } = {},
+  labelProps: { style: labelStyle, ...otherLabelProps } = {},
+  label = `Drop or browse image${multiple ? 's' : ''}...`,
+  imageCarouselWithFullViewProps: {
+    style: imageCarouselWithFullViewStyle,
+    onChangeActiveItem: imageCarouselWithFullViewOnChangeActiveItem,
+    ...otherImageCarouselWithFullViewProps
+  } = {},
+  removeButtonText = 'Remove',
+  removeButtonProps: {
+    style: removeButtonStyle,
+    className: removeButtonClassName,
+    onClick: removeButtonOnClick,
+    ...otherRemoveButtonProps
+  } = {},
+  ...otherProps
+}: FullImageFileInputProps) => {
+  const [internalValue, setInternalValue] = useState<File[]>(defaultValue);
+  const [activeCarouselItem, setActiveCarouselItem] = useState<ImageCarouselItemType | null>(null);
 
-    const isControlled = value !== undefined;
+  const isControlled = value !== undefined;
 
-    const isInputSingleItem = !multiple;
-    const isAdditive = !!multiple;
+  const isInputSingleItem = !multiple;
+  const isAdditive = !!multiple;
 
-    const getValue = (): File[] | undefined => {
-      return isControlled ? value : internalValue;
-    };
+  const getValue = (): File[] | undefined => {
+    return isControlled ? value : internalValue;
+  };
 
-    const imageFilesToCarouselItems = useMemo(() => {
-      const map = new Map<File, ImageCarouselItemType>();
+  const imageFilesToCarouselItems = useMemo(() => {
+    const map = new Map<File, ImageCarouselItemType>();
 
-      (getValue() ?? []).forEach((imageFile) => {
-        map.set(imageFile, {
-          src: URL.createObjectURL(imageFile),
-          alt: imageFile.name,
-        });
+    (getValue() ?? []).forEach((imageFile) => {
+      map.set(imageFile, {
+        src: URL.createObjectURL(imageFile),
+        alt: imageFile.name,
       });
+    });
 
-      return map;
-    }, [getValue()]);
+    return map;
+  }, [getValue()]);
 
-    const imageCarouselItems: ImageCarouselWithFullViewProps['items'] = useMemo(() => {
-      if (isAdditive) {
-        return [...imageFilesToCarouselItems.values()];
+  const imageCarouselItems: ImageCarouselWithFullViewProps['items'] = useMemo(() => {
+    if (isAdditive) {
+      return [...imageFilesToCarouselItems.values()];
+    } else {
+      return (imageFilesToCarouselItems.size > 0 ? [[...imageFilesToCarouselItems.values()][0]] : []).filter(Boolean);
+    }
+  }, [imageFilesToCarouselItems, isAdditive]);
+
+  const showRemoveButton = !!activeCarouselItem;
+
+  const handleChangeFiles: LabelledImageFileInputProps['onChangeFiles'] = (files, event) => {
+    const imageFiles = files.filter((file) => file.type.startsWith('image'));
+
+    if (imageFiles.length > 0) {
+      if (isControlled) {
+        onChangeImageFiles?.(getUpdatedFilesArray(value, imageFiles, isAdditive));
       } else {
-        return (imageFilesToCarouselItems.size > 0 ? [[...imageFilesToCarouselItems.values()][0]] : []).filter(Boolean);
+        setInternalValue((curr) => {
+          const newArr = getUpdatedFilesArray(curr, isAdditive ? imageFiles : imageFiles.slice(0, 1), isAdditive);
+
+          onChangeImageFiles?.(newArr);
+
+          return newArr;
+        });
       }
-    }, [imageFilesToCarouselItems, isAdditive]);
+    }
+  };
 
-    const showRemoveButton = !!activeCarouselItem;
+  const handleRemoveActiveItem: ButtonProps['onClick'] = (event) => {
+    removeButtonOnClick?.(event);
 
-    const handleChangeFiles: LabelledImageFileInputProps['onChangeFiles'] = (files, event) => {
-      const imageFiles = files.filter((file) => file.type.startsWith('image'));
+    if (showRemoveButton) {
+      const [imageFile] =
+        [...imageFilesToCarouselItems.entries()].find(([_imageFile, imageCarouselItem]) => {
+          return imageCarouselItem === activeCarouselItem;
+        }) ?? [];
 
-      if (imageFiles.length > 0) {
+      if (imageFile) {
+        setActiveCarouselItem(null);
+
         if (isControlled) {
-          onChangeImageFiles?.(getUpdatedFilesArray(value, imageFiles, isAdditive));
+          onChangeImageFiles?.(value.filter((file) => file !== imageFile));
         } else {
           setInternalValue((curr) => {
-            const newArr = getUpdatedFilesArray(curr, isAdditive ? imageFiles : imageFiles.slice(0, 1), isAdditive);
+            const newArr = curr.filter((file) => file !== imageFile);
 
             onChangeImageFiles?.(newArr);
 
@@ -196,108 +219,81 @@ export const FullImageFileInput = forwardRef<HTMLInputElement, FullImageFileInpu
           });
         }
       }
-    };
+    }
+  };
 
-    const handleRemoveActiveItem: ButtonProps['onClick'] = (event) => {
-      removeButtonOnClick?.(event);
+  // Layout effect to avoid a flicker of the placeholder in cases when it's single item from the start.
+  useLayoutEffect(() => {
+    if (isInputSingleItem) {
+      setActiveCarouselItem([...imageFilesToCarouselItems.values()][0] ?? null);
+    } else {
+      if (activeCarouselItem) {
+        const isActiveCarouselItemInCarousel = [...imageFilesToCarouselItems.entries()].some(
+          ([_imageFile, carouselItem]) => carouselItem === activeCarouselItem
+        );
 
-      if (showRemoveButton) {
-        const [imageFile] =
-          [...imageFilesToCarouselItems.entries()].find(([_imageFile, imageCarouselItem]) => {
-            return imageCarouselItem === activeCarouselItem;
-          }) ?? [];
-
-        if (imageFile) {
+        if (!isActiveCarouselItemInCarousel) {
           setActiveCarouselItem(null);
-
-          if (isControlled) {
-            onChangeImageFiles?.(value.filter((file) => file !== imageFile));
-          } else {
-            setInternalValue((curr) => {
-              const newArr = curr.filter((file) => file !== imageFile);
-
-              onChangeImageFiles?.(newArr);
-
-              return newArr;
-            });
-          }
         }
       }
-    };
+    }
+  }, [isInputSingleItem, imageFilesToCarouselItems, activeCarouselItem]);
 
-    // Layout effect to avoid a flicker of the placeholder in cases when it's single item from the start.
-    useLayoutEffect(() => {
-      if (isInputSingleItem) {
-        setActiveCarouselItem([...imageFilesToCarouselItems.values()][0] ?? null);
-      } else {
-        if (activeCarouselItem) {
-          const isActiveCarouselItemInCarousel = [...imageFilesToCarouselItems.entries()].some(
-            ([_imageFile, carouselItem]) => carouselItem === activeCarouselItem
-          );
+  return (
+    <Flexbox
+      className={buildClassName(containerClassName, 'jtjs-full-image-file-input-container')}
+      direction="column"
+      {...otherContainerProps}
+    >
+      <LabelledImageFileInput
+        onChangeFiles={handleChangeFiles}
+        labelProps={{
+          style: {
+            width: '100%',
+            ...labelStyle,
+          },
+          ...otherLabelProps,
+        }}
+        multiple={multiple}
+        label={label}
+        {...otherProps}
+        ref={ref}
+      />
 
-          if (!isActiveCarouselItemInCarousel) {
-            setActiveCarouselItem(null);
-          }
-        }
-      }
-    }, [isInputSingleItem, imageFilesToCarouselItems, activeCarouselItem]);
+      <ImageCarouselWithFullView
+        // Hide the carousel (but not the full view) when the input is only supporting
+        // one item.
+        style={{
+          ...(isInputSingleItem
+            ? {
+                display: 'none',
+              }
+            : {}),
+          ...imageCarouselWithFullViewStyle,
+        }}
+        {...otherImageCarouselWithFullViewProps}
+        activeItem={activeCarouselItem}
+        onChangeActiveItem={(item) => {
+          imageCarouselWithFullViewOnChangeActiveItem?.(item);
 
-    return (
-      <Flexbox
-        className={buildClassName(containerClassName, 'jtjs-full-image-file-input-container')}
-        direction="column"
-        {...otherContainerProps}
-      >
-        <LabelledImageFileInput
-          onChangeFiles={handleChangeFiles}
-          labelProps={{
-            style: {
-              width: '100%',
-              ...labelStyle,
-            },
-            ...otherLabelProps,
-          }}
-          multiple={multiple}
-          label={label}
-          {...otherProps}
-          ref={ref}
-        />
+          setActiveCarouselItem(item);
+        }}
+        items={imageCarouselItems}
+      />
 
-        <ImageCarouselWithFullView
-          // Hide the carousel (but not the full view) when the input is only supporting
-          // one item.
+      {showRemoveButton && (
+        <Button
+          className={buildClassName(removeButtonClassName, 'jtjs-full-image-file-input-remove-button')}
+          onClick={handleRemoveActiveItem}
           style={{
-            ...(isInputSingleItem
-              ? {
-                  display: 'none',
-                }
-              : {}),
-            ...imageCarouselWithFullViewStyle,
+            width: '100%',
+            ...removeButtonStyle,
           }}
-          {...otherImageCarouselWithFullViewProps}
-          activeItem={activeCarouselItem}
-          onChangeActiveItem={(item) => {
-            imageCarouselWithFullViewOnChangeActiveItem?.(item);
-
-            setActiveCarouselItem(item);
-          }}
-          items={imageCarouselItems}
-        />
-
-        {showRemoveButton && (
-          <Button
-            className={buildClassName(removeButtonClassName, 'jtjs-full-image-file-input-remove-button')}
-            onClick={handleRemoveActiveItem}
-            style={{
-              width: '100%',
-              ...removeButtonStyle,
-            }}
-            {...otherRemoveButtonProps}
-          >
-            {removeButtonText}
-          </Button>
-        )}
-      </Flexbox>
-    );
-  }
-);
+          {...otherRemoveButtonProps}
+        >
+          {removeButtonText}
+        </Button>
+      )}
+    </Flexbox>
+  );
+};

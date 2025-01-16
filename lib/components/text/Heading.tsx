@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, createElement, forwardRef } from 'react';
+import { ComponentPropsWithRef, createElement } from 'react';
 import { buildClassName } from '../../util/util-functions';
 
 export interface HeadingProps extends ComponentPropsWithRef<'h1'> {
@@ -12,12 +12,10 @@ export interface HeadingProps extends ComponentPropsWithRef<'h1'> {
 /**
  * Wraps the base heading elements and uses the appropriate element depending on the `importance` of the Heading.
  */
-export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
-  ({ className, importance = 3, ...otherProps }: HeadingProps, ref) => {
-    return createElement(`h${importance}`, {
-      className: buildClassName(className, 'jtjs-heading'),
-      ...otherProps,
-      ref,
-    });
-  }
-);
+export const Heading = ({ ref, className, importance = 3, ...otherProps }: HeadingProps) => {
+  return createElement(`h${importance}`, {
+    className: buildClassName(className, 'jtjs-heading'),
+    ...otherProps,
+    ref,
+  });
+};

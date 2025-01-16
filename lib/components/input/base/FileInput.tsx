@@ -1,4 +1,4 @@
-import { ChangeEvent, forwardRef } from 'react';
+import { ChangeEvent } from 'react';
 import { buildClassName } from '../../../util/util-functions';
 import { Input, InputProps } from './Input';
 
@@ -26,24 +26,22 @@ export interface FileInputProps extends InputProps {
  * Note that file inputs in HTML are nearly impossible to control. The only valid
  * value for `value` is an empty string, and that's for wiping the input. The `files`
  * attribute is intended to be immutable. Because of this, you should treat this input
- * as uncontrolled. 
- * 
+ * as uncontrolled.
+ *
  * If you'd like a more controlled solution, consider using this component as a base to
  * create a file input that tracks its own state. This is the approach `FullImageFileInput` uses.
  */
-export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
-  ({ className, onChange, onChangeFiles, ...otherProps }: FileInputProps, ref) => {
-    return (
-      <Input
-        className={buildClassName(className, 'jtjs-file-input')}
-        type="file"
-        onChange={(event) => {
-          onChangeFiles?.(Array.from(event.target.files ?? []), event);
-          onChange?.(event);
-        }}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+export const FileInput = ({ ref, className, onChange, onChangeFiles, ...otherProps }: FileInputProps) => {
+  return (
+    <Input
+      className={buildClassName(className, 'jtjs-file-input')}
+      type="file"
+      onChange={(event) => {
+        onChangeFiles?.(Array.from(event.target.files ?? []), event);
+        onChange?.(event);
+      }}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

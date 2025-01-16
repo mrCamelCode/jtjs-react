@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, forwardRef } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import { buildClassName } from '../../util';
 
 export interface LinkProps extends ComponentPropsWithRef<'a'> {
@@ -17,31 +17,17 @@ export interface LinkProps extends ComponentPropsWithRef<'a'> {
   disableExternalNewTab?: boolean;
 }
 
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
-  (
-    {
-      className,
-      external = false,
-      disableExternalNewTab = false,
-      ...otherProps
-    }: LinkProps,
-    ref
-  ) => {
-    return (
-      <a
-        className={buildClassName(
-          className,
-          'jtjs-link',
-          external ? 'jtjs-link-external' : ''
-        )}
-        {...(external && !disableExternalNewTab
-          ? {
-              target: '_blank',
-            }
-          : {})}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+export const Link = ({ ref, className, external = false, disableExternalNewTab = false, ...otherProps }: LinkProps) => {
+  return (
+    <a
+      className={buildClassName(className, 'jtjs-link', external ? 'jtjs-link-external' : '')}
+      {...(external && !disableExternalNewTab
+        ? {
+            target: '_blank',
+          }
+        : {})}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

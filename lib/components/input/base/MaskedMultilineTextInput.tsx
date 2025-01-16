@@ -1,12 +1,8 @@
-import { ChangeEvent, forwardRef, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { buildClassName, maskText } from '../../../util';
-import {
-  MultilineTextInput,
-  MultilineTextInputProps,
-} from './MultilineTextInput';
+import { MultilineTextInput, MultilineTextInputProps } from './MultilineTextInput';
 
-export interface MaskedMultilineTextInputProps
-  extends Omit<MultilineTextInputProps, 'onChangeText'> {
+export interface MaskedMultilineTextInputProps extends Omit<MultilineTextInputProps, 'onChangeText'> {
   /**
    * Handler for when the user attempts to change the input.
    *
@@ -15,11 +11,7 @@ export interface MaskedMultilineTextInputProps
    * @param rawText - The raw input text with no filtering.
    * @param event - The original simulated event.
    */
-  onChangeText?: (
-    treatedText: string,
-    rawText: string,
-    event: ChangeEvent<HTMLTextAreaElement>
-  ) => void;
+  onChangeText?: (treatedText: string, rawText: string, event: ChangeEvent<HTMLTextAreaElement>) => void;
   /**
    * Mask to apply to the input. The masking is applied using {@link maskText}. Because this component is intended
    * to allow multiline text, your regex does _not_ need to explicitly allow newlines.
@@ -39,67 +31,55 @@ export interface MaskedMultilineTextInputProps
  * control the underlying input for you. This allows a provided mask to still apply to
  * the user input.
  */
-export const MaskedMultilineTextInput = forwardRef<
-  HTMLTextAreaElement,
-  MaskedMultilineTextInputProps
->(
-  (
-    {
-      className,
-      mask,
-      value,
-      defaultValue,
-      onChange,
-      onChangeText,
-      ...otherProps
-    }: MaskedMultilineTextInputProps,
-    ref
-  ) => {
-    const [internalValue, setInternalValue] = useState<string>(
-      (defaultValue as string) ?? ''
-    );
+export const MaskedMultilineTextInput = ({
+  ref,
+  className,
+  mask,
+  value,
+  defaultValue,
+  onChange,
+  onChangeText,
+  ...otherProps
+}: MaskedMultilineTextInputProps) => {
+  const [internalValue, setInternalValue] = useState<string>((defaultValue as string) ?? '');
 
-    const isControlled = value !== undefined;
+  const isControlled = value !== undefined;
 
-    const handleChange: MultilineTextInputProps['onChange'] = (event) => {
-      const rawText = event.target.value;
+  const handleChange: MultilineTextInputProps['onChange'] = (event) => {
+    const rawText = event.target.value;
 
-      const treatedText = mask
-        ? rawText
-            .split(/[\r\n]+/)
-            .map((rawLine) => {
-              return maskText(rawLine, mask);
-            })
-            .filter((treatedLine) => !!treatedLine)
-            .join('\n')
-        : rawText;
+    const treatedText = mask
+      ? rawText
+          .split(/[\r\n]+/)
+          .map((rawLine) => {
+            return maskText(rawLine, mask);
+          })
+          .filter((treatedLine) => !!treatedLine)
+          .join('\n')
+      : rawText;
 
-      onChangeText?.(treatedText, rawText, event);
+    onChangeText?.(treatedText, rawText, event);
 
-      if (!isControlled) {
-        setInternalValue(treatedText);
-      }
-    };
+    if (!isControlled) {
+      setInternalValue(treatedText);
+    }
+  };
 
-    const getValue = () => {
-      return isControlled ? value : internalValue;
-    };
+  const getValue = () => {
+    return isControlled ? value : internalValue;
+  };
 
-    return (
-      <MultilineTextInput
-        data-testid="masked-multiline-text-input"
-        className={buildClassName(
-          className,
-          'jtjs-masked-multiline-text-input'
-        )}
-        value={getValue()}
-        onChange={(event) => {
-          handleChange(event);
-          onChange?.(event);
-        }}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+  return (
+    <MultilineTextInput
+      data-testid="masked-multiline-text-input"
+      className={buildClassName(className, 'jtjs-masked-multiline-text-input')}
+      value={getValue()}
+      onChange={(event) => {
+        handleChange(event);
+        onChange?.(event);
+      }}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

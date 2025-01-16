@@ -1,14 +1,9 @@
-import { forwardRef } from 'react';
 import { StructuredDialog, StructuredDialogProps } from './StructuredDialog';
 import { DialogButton } from './dialog.model';
 
-export type AcknowledgmentDialogButton = Omit<
-  DialogButton,
-  'closeDialogOnClick' | 'beforeCloseOnClick'
->;
+export type AcknowledgmentDialogButton = Omit<DialogButton, 'closeDialogOnClick' | 'beforeCloseOnClick'>;
 
-export interface AcknowledgmentDialogProps
-  extends Omit<StructuredDialogProps, 'buttons'> {
+export interface AcknowledgmentDialogProps extends Omit<StructuredDialogProps, 'buttons'> {
   /**
    * The data for the button that represents acknowledging the contents of the dialog. Defaults to
    * a button with text `Okay` that closes the dialog when clicked. Use `onAcknowledge` to
@@ -37,31 +32,18 @@ export interface AcknowledgmentDialogProps
  *
  * The dialog will automatically close if the handler for the action (`onAcknowledge`) evaluates to `true`.
  */
-export const AcknowledgmentDialog = forwardRef<
-  HTMLDialogElement,
-  AcknowledgmentDialogProps
->(
-  (
-    {
-      acknowledgeButton,
-      onAcknowledge,
-      ...otherProps
-    }: AcknowledgmentDialogProps,
-    ref
-  ) => {
-    const autoAcknowledgeButton = {
-      text: acknowledgeButton?.text ?? 'Okay',
-      ...acknowledgeButton,
-      closeDialogOnClick: true,
-      beforeCloseOnClick: onAcknowledge,
-    } as DialogButton;
+export const AcknowledgmentDialog = ({
+  ref,
+  acknowledgeButton,
+  onAcknowledge,
+  ...otherProps
+}: AcknowledgmentDialogProps) => {
+  const autoAcknowledgeButton = {
+    text: acknowledgeButton?.text ?? 'Okay',
+    ...acknowledgeButton,
+    closeDialogOnClick: true,
+    beforeCloseOnClick: onAcknowledge,
+  } as DialogButton;
 
-    return (
-      <StructuredDialog
-        buttons={[autoAcknowledgeButton]}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+  return <StructuredDialog buttons={[autoAcknowledgeButton]} {...otherProps} ref={ref} />;
+};
