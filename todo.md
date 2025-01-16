@@ -10,10 +10,4 @@
 
 - Add stuff to simplify drag 'n' drop.
 
-- Add a hook like `useFetchData` or something like that that facilitates getting data from an async source and addresses common pitfalls automatically (like race conditions involved with multiple requests being out at the same time).
-
 - Popover API for tooltips?
-
-- Update to React 19.
-  - Reevaluate uses of `useEffect`.
-  - See if new hooks like `useTransition` would have good use cases in the codebase.

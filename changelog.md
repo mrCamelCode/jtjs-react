@@ -1,3 +1,16 @@
+# 3.0.0
+
+## Breaking Changes
+
+- Updated to React 19. If you need help upgrading, check out [React's official upgrade guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide).
+- `Button` no longer has the `enableMouseTracking` nor `onChangeMousePosition` props.
+  - These always felt out of place for what's supposed to be a simple wrapper and was the result of a momentary lapse in having a hard separation between `@jtjs/react` and styling.
+
+## New Hooks
+
+- `useFetchedData`
+  - Makes it easy to safely use data that you want a component to fetch from some asynchronous data source (like a network call to a server).
+
 # 2.0.0
 
 An exciting update that brings a variety of new components to the library to aid in dealing with file uploads, particularly image uploads!

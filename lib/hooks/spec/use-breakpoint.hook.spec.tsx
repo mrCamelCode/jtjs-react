@@ -1,25 +1,11 @@
 import { cleanup, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, vi, it, afterAll } from 'vitest';
+import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 import {
   isBreakpointBiggerThan,
   isBreakpointSmallerThan,
   isBreakpointWithin,
   useBreakpoint,
 } from '../use-breakpoint.hook';
-
-// let mockGetWindowWidth = vi.fn();
-// vi.mock('../use-window-dimensions.hook', () => {
-//   const originalModule = vi.requireActual('../use-window-dimensions.hook');
-
-//   return {
-//     __esModule: true,
-//     ...originalModule,
-//     useWindowDimensions: vi.fn(() => ({
-//       height: 0,
-//       width: mockGetWindowWidth(),
-//     })),
-//   };
-// });
 
 // Since `useBreakpoint` uses state, we need a component that uses the hook to be able to test it (otherwise useState
 // breaks).
@@ -36,11 +22,6 @@ const renderTestComponent = () => {
 describe('use-breakpoint.hook', () => {
   describe('useBreakpoint', () => {
     const originalWindow = window;
-    // let mockWindow = {
-    //   innerWidth: 1920,
-    // };
-    // // @ts-ignore
-    // window = mockWindow;
 
     afterEach(() => {
       vi.clearAllMocks();
