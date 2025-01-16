@@ -1,9 +1,8 @@
-import { ChangeEvent, forwardRef, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { buildClassName, maskText } from '../../../util';
 import { TextInput, TextInputProps } from './TextInput';
 
-export interface MaskedTextInputProps
-  extends Omit<TextInputProps, 'onChangeText'> {
+export interface MaskedTextInputProps extends Omit<TextInputProps, 'onChangeText'> {
   /**
    * Handler for when the user attempts to change the input.
    *
@@ -12,11 +11,7 @@ export interface MaskedTextInputProps
    * @param rawText - The raw input text with no filtering.
    * @param event - The original simulated event.
    */
-  onChangeText?: (
-    treatedText: string,
-    rawText: string,
-    event: ChangeEvent<HTMLInputElement>
-  ) => void;
+  onChangeText?: (treatedText: string, rawText: string, event: ChangeEvent<HTMLInputElement>) => void;
   /**
    * Mask to apply to the input. The masking is applied using {@link maskText}.
    *
@@ -35,55 +30,46 @@ export interface MaskedTextInputProps
  * control the underlying input for you. This allows a provided mask to still apply to
  * any input.
  */
-export const MaskedTextInput = forwardRef<
-  HTMLInputElement,
-  MaskedTextInputProps
->(
-  (
-    {
-      className,
-      mask,
-      value,
-      defaultValue,
-      onChange,
-      onChangeText,
-      ...otherProps
-    }: MaskedTextInputProps,
-    ref
-  ) => {
-    const [internalValue, setInternalValue] = useState<string>(
-      (defaultValue as string) ?? ''
-    );
+export const MaskedTextInput = ({
+  ref,
+  className,
+  mask,
+  value,
+  defaultValue,
+  onChange,
+  onChangeText,
+  ...otherProps
+}: MaskedTextInputProps) => {
+  const [internalValue, setInternalValue] = useState<string>((defaultValue as string) ?? '');
 
-    const isControlled = value !== undefined;
+  const isControlled = value !== undefined;
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-      const rawText = event.target.value;
-      const treatedText = mask ? maskText(rawText, mask) : rawText;
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const rawText = event.target.value;
+    const treatedText = mask ? maskText(rawText, mask) : rawText;
 
-      onChangeText?.(treatedText, rawText, event);
+    onChangeText?.(treatedText, rawText, event);
 
-      if (!isControlled) {
-        setInternalValue(treatedText);
-      }
-    };
+    if (!isControlled) {
+      setInternalValue(treatedText);
+    }
+  };
 
-    const getValue = () => {
-      return isControlled ? value : internalValue;
-    };
+  const getValue = () => {
+    return isControlled ? value : internalValue;
+  };
 
-    return (
-      <TextInput
-        data-testid="masked-text-input"
-        className={buildClassName(className, 'jtjs-masked-text-input')}
-        value={getValue()}
-        onChange={(event) => {
-          handleChange(event);
-          onChange?.(event);
-        }}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+  return (
+    <TextInput
+      data-testid="masked-text-input"
+      className={buildClassName(className, 'jtjs-masked-text-input')}
+      value={getValue()}
+      onChange={(event) => {
+        handleChange(event);
+        onChange?.(event);
+      }}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

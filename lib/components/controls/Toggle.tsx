@@ -1,18 +1,9 @@
-import {
-  ComponentPropsWithRef,
-  KeyboardEvent,
-  MouseEvent,
-  forwardRef,
-  useState,
-} from 'react';
+import { ComponentPropsWithRef, KeyboardEvent, MouseEvent, useState } from 'react';
 import { buildClassName } from '../../util/util-functions';
 
-type UserInteractionEvent =
-  | MouseEvent<HTMLSpanElement>
-  | KeyboardEvent<HTMLSpanElement>;
+type UserInteractionEvent = MouseEvent<HTMLSpanElement> | KeyboardEvent<HTMLSpanElement>;
 
-export interface ToggleProps
-  extends Omit<ComponentPropsWithRef<'span'>, 'children'> {
+export interface ToggleProps extends Omit<ComponentPropsWithRef<'span'>, 'children' | 'onToggle'> {
   defaultIsOn?: boolean;
   /**
    * Whether the toggle is currently on.
@@ -49,78 +40,62 @@ export interface ToggleProps
  *   .jtjs-toggle-knob
  * ```
  */
-export const Toggle = forwardRef<HTMLSpanElement, ToggleProps>(
-  (
-    {
-      className,
-      isOn,
-      onToggle,
-      disabled,
-      defaultIsOn,
-      ...otherProps
-    }: ToggleProps,
-    ref
-  ) => {
-    const [internalValue, setInternalValue] = useState(defaultIsOn ?? false);
+export const Toggle = ({ ref, className, isOn, onToggle, disabled, defaultIsOn, ...otherProps }: ToggleProps) => {
+  const [internalValue, setInternalValue] = useState(defaultIsOn ?? false);
 
-    const isControlled = isOn !== undefined;
+  const isControlled = isOn !== undefined;
 
-    const getIsOn = () => {
-      return isControlled ? isOn : internalValue;
-    };
+  const getIsOn = () => {
+    return isControlled ? isOn : internalValue;
+  };
 
-    const onText = getIsOn() ? 'on' : 'off';
+  const onText = getIsOn() ? 'on' : 'off';
 
-    const handleToggle: ToggleProps['onToggle'] = (newIsOn, event) => {
-      if (!disabled) {
-        onToggle?.(newIsOn, event);
+  const handleToggle: ToggleProps['onToggle'] = (newIsOn, event) => {
+    if (!disabled) {
+      onToggle?.(newIsOn, event);
 
-        if (!isControlled) {
-          setInternalValue(newIsOn);
-        }
+      if (!isControlled) {
+        setInternalValue(newIsOn);
       }
-    };
+    }
+  };
 
-    return (
-      <span
-        data-testid="toggle"
-        role="switch"
-        aria-label={`toggle-${onText}`}
-        aria-checked={getIsOn()}
-        aria-disabled={disabled}
-        {...{
-          disabled,
-        }}
-        className={buildClassName(
-          className,
-          'jtjs-toggle',
-          `jtjs-toggle-${onText}`
-        )}
-        onClick={(event) => {
+  return (
+    <span
+      data-testid="toggle"
+      role="switch"
+      aria-label={`toggle-${onText}`}
+      aria-checked={getIsOn()}
+      aria-disabled={disabled}
+      {...{
+        disabled,
+      }}
+      className={buildClassName(className, 'jtjs-toggle', `jtjs-toggle-${onText}`)}
+      onClick={(event) => {
+        handleToggle(!getIsOn(), event);
+      }}
+      // Allows the user to navigate to the toggle with the keyboard and press
+      // space to interact with it.
+      // Note: You can't focus normal inputs when they're disabled
+      tabIndex={disabled ? -1 : 0}
+      onKeyDown={(event) => {
+        if (event.key === ' ') {
+          event.preventDefault();
           handleToggle(!getIsOn(), event);
-        }}
-        // Allows the user to navigate to the toggle with the keyboard and press
-        // space to interact with it.
-        // Note: You can't focus normal inputs when they're disabled
-        tabIndex={disabled ? -1 : 0}
-        onKeyDown={(event) => {
-          if (event.key === ' ') {
-            event.preventDefault();
-            handleToggle(!getIsOn(), event);
-          }
-        }}
-        {...otherProps}
-        ref={ref}
-      >
-        {!disabled && (
-          <span
-            className="jtjs-toggle-knob"
-            style={{
-              position: 'absolute',
-            }}
-          />
-        )}
-      </span>
-    );
-  }
-);
+        }
+      }}
+      {...otherProps}
+      ref={ref}
+    >
+      {!disabled && (
+        <span
+          className="jtjs-toggle-knob"
+          style={{
+            position: 'absolute',
+          }}
+        />
+      )}
+    </span>
+  );
+};

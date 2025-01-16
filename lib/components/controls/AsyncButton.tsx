@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { useState } from 'react';
 import { useIsMountedRef } from '../../hooks/use-is-mounted-ref.hook';
 import { buildClassName } from '../../util/util-functions';
 import { Button, ButtonProps } from './Button';
@@ -19,50 +19,41 @@ export interface AsyncButtonProps extends ButtonProps {
  * While the async task is running, the button will have the `jtjs-async-button-working` class attached to it if you'd
  * like to assign special styles for that state.
  */
-export const AsyncButton = forwardRef<HTMLButtonElement, AsyncButtonProps>(
-  (
-    {
-      className,
-      onClick,
-      isPerformingAsyncTask = false,
-      disabled,
-      ...otherProps
-    }: AsyncButtonProps,
-    ref
-  ) => {
-    const isMountedRef = useIsMountedRef();
+export const AsyncButton = ({
+  ref,
+  className,
+  onClick,
+  isPerformingAsyncTask = false,
+  disabled,
+  ...otherProps
+}: AsyncButtonProps) => {
+  const isMountedRef = useIsMountedRef();
 
-    const [isPerformingAsyncOnClick, setIsPerformingAsyncOnClick] =
-      useState(false);
+  const [isPerformingAsyncOnClick, setIsPerformingAsyncOnClick] = useState(false);
 
-    const handleClick: AsyncButtonProps['onClick'] = async (...args) => {
-      try {
-        setIsPerformingAsyncOnClick(true);
+  const handleClick: AsyncButtonProps['onClick'] = async (...args) => {
+    try {
+      setIsPerformingAsyncOnClick(true);
 
-        await onClick?.(...args);
-      } catch (error) {
-        throw error;
-      } finally {
-        if (isMountedRef.current) {
-          setIsPerformingAsyncOnClick(false);
-        }
+      await onClick?.(...args);
+    } catch (error) {
+      throw error;
+    } finally {
+      if (isMountedRef.current) {
+        setIsPerformingAsyncOnClick(false);
       }
-    };
+    }
+  };
 
-    const isWorking = isPerformingAsyncOnClick || isPerformingAsyncTask;
+  const isWorking = isPerformingAsyncOnClick || isPerformingAsyncTask;
 
-    return (
-      <Button
-        className={buildClassName(
-          className,
-          'jtjs-async-button',
-          isWorking ? 'jtjs-async-button-working' : undefined
-        )}
-        disabled={isWorking || disabled}
-        onClick={handleClick}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+  return (
+    <Button
+      className={buildClassName(className, 'jtjs-async-button', isWorking ? 'jtjs-async-button-working' : undefined)}
+      disabled={isWorking || disabled}
+      onClick={handleClick}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

@@ -1,14 +1,9 @@
-import { forwardRef } from 'react';
 import { StructuredDialog, StructuredDialogProps } from './StructuredDialog';
 import { DialogButton } from './dialog.model';
 
-export type FormDialogButton = Omit<
-  DialogButton,
-  'closeDialogOnClick' | 'beforeCloseOnClick'
->;
+export type FormDialogButton = Omit<DialogButton, 'closeDialogOnClick' | 'beforeCloseOnClick'>;
 
-export interface FormDialogProps
-  extends Omit<StructuredDialogProps, 'buttons'> {
+export interface FormDialogProps extends Omit<StructuredDialogProps, 'buttons'> {
   /**
    * The data for the button that represents cancelling the form. Defaults to
    * a button with text `Cancel` that closes the dialog when clicked. Use `onCancel` to
@@ -36,21 +31,13 @@ export interface FormDialogProps
  * It's likely you'll want to close the dialog after the user successfully submits your form.
  * To do so, keep a `ref` to the `FormDialog` and pass it to the `closeDialog` function.
  */
-export const FormDialog = forwardRef<HTMLDialogElement, FormDialogProps>(
-  ({ cancelButton, onCancel, ...otherProps }: FormDialogProps, ref) => {
-    const autoCancelButton = {
-      text: cancelButton?.text ?? 'Cancel',
-      ...cancelButton,
-      closeDialogOnClick: true,
-      beforeCloseOnClick: onCancel,
-    } as DialogButton;
+export const FormDialog = ({ ref, cancelButton, onCancel, ...otherProps }: FormDialogProps) => {
+  const autoCancelButton = {
+    text: cancelButton?.text ?? 'Cancel',
+    ...cancelButton,
+    closeDialogOnClick: true,
+    beforeCloseOnClick: onCancel,
+  } as DialogButton;
 
-    return (
-      <StructuredDialog
-        buttons={[autoCancelButton]}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+  return <StructuredDialog buttons={[autoCancelButton]} {...otherProps} ref={ref} />;
+};

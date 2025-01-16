@@ -1,5 +1,5 @@
 import { ImageConversionType, ImageUtil } from '@jtjs/browser';
-import { forwardRef, useState } from 'react';
+import { useState } from 'react';
 import { useIsMountedRef } from '../../../hooks/use-is-mounted-ref.hook';
 import { buildClassName } from '../../../util/util-functions';
 import { FileInput, FileInputProps } from './FileInput';
@@ -17,7 +17,7 @@ export interface ImageFileInputProps extends FileInputProps {
    * Note that file type acceptance in HTML is more of a suggestion than something
    * the browser enforces. If the user provides a non-image file, the conversion
    * will just output the file they provided unchanged.
-   * 
+   *
    * When the conversion is complete, `onChangeFiles` will be invoked with the results
    * of the conversion.
    */
@@ -39,41 +39,46 @@ export interface ImageFileInputProps extends FileInputProps {
  * file inputs are nearly impossible to control and this component is intended to be
  * as close to the native HTML input as possible, this component can't just filter out
  * non-images.
- * 
+ *
  * If you'd like a more complete and opinionated image file input, consider using
  * `FullImageFileInput`.
  */
-export const ImageFileInput = forwardRef<HTMLInputElement, ImageFileInputProps>(
-  ({ className, onChangeFiles, convertImagesTo, disabled, ...otherProps }: ImageFileInputProps, ref) => {
-    const isMountedRef = useIsMountedRef();
+export const ImageFileInput = ({
+  ref,
+  className,
+  onChangeFiles,
+  convertImagesTo,
+  disabled,
+  ...otherProps
+}: ImageFileInputProps) => {
+  const isMountedRef = useIsMountedRef();
 
-    const [isConverting, setIsConverting] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
 
-    return (
-      <FileInput
-        className={buildClassName(className, 'jtjs-image-file-input')}
-        accept="image/*"
-        onChangeFiles={async (files, event) => {
-          let updatedFiles = files;
+  return (
+    <FileInput
+      className={buildClassName(className, 'jtjs-image-file-input')}
+      accept="image/*"
+      onChangeFiles={async (files, event) => {
+        let updatedFiles = files;
 
-          if (!!convertImagesTo) {
-            setIsConverting(true);
+        if (!!convertImagesTo) {
+          setIsConverting(true);
 
-            updatedFiles = await Promise.all(files.map((file) => ImageUtil.convert(file, convertImagesTo)));
-
-            if (isMountedRef.current) {
-              setIsConverting(false);
-            }
-          }
+          updatedFiles = await Promise.all(files.map((file) => ImageUtil.convert(file, convertImagesTo)));
 
           if (isMountedRef.current) {
-            onChangeFiles?.(updatedFiles, event);
+            setIsConverting(false);
           }
-        }}
-        disabled={disabled || isConverting}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+        }
+
+        if (isMountedRef.current) {
+          onChangeFiles?.(updatedFiles, event);
+        }
+      }}
+      disabled={disabled || isConverting}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

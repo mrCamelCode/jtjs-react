@@ -1,12 +1,4 @@
-import {
-  ComponentPropsWithRef,
-  MouseEvent,
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import { ComponentPropsWithRef, MouseEvent, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { buildClassName } from '../../util/util-functions';
 
 export interface ButtonProps extends ComponentPropsWithRef<'button'> {
@@ -35,76 +27,62 @@ export interface ButtonProps extends ComponentPropsWithRef<'button'> {
  * The `type` prop is set to "button" by default, but can be overridden. This is to avoid having buttons
  * work unexpectedly as submit buttons when you use them in a form.
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      onMouseMove,
-      onChangeMousePosition,
-      enableMouseTracking = false,
-      ...otherProps
-    }: ButtonProps,
-    ref
-  ) => {
-    const internalRef = useRef<HTMLButtonElement>(null);
+export const Button = ({
+  ref,
+  className,
+  onMouseMove,
+  onChangeMousePosition,
+  enableMouseTracking = false,
+  ...otherProps
+}: ButtonProps) => {
+  const internalRef = useRef<HTMLButtonElement>(null);
 
-    useImperativeHandle(ref, () => internalRef.current as HTMLButtonElement);
+  useImperativeHandle(ref, () => internalRef.current as HTMLButtonElement);
 
-    const [mousePos, setMousePos] = useState<{ x: number; y: number }>({
-      x: -1,
-      y: -1,
-    });
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({
+    x: -1,
+    y: -1,
+  });
 
-    const handleTrackMouse = (event: MouseEvent): void => {
-      if (enableMouseTracking) {
-        const rect = event.currentTarget.getBoundingClientRect();
+  const handleTrackMouse = (event: MouseEvent): void => {
+    if (enableMouseTracking) {
+      const rect = event.currentTarget.getBoundingClientRect();
 
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
 
-        const newPos = {
-          x,
-          y,
-        };
+      const newPos = {
+        x,
+        y,
+      };
 
-        setMousePos(newPos);
+      setMousePos(newPos);
 
-        onChangeMousePosition?.({
-          ...newPos,
-        });
-      }
-    };
+      onChangeMousePosition?.({
+        ...newPos,
+      });
+    }
+  };
 
-    useEffect(() => {
-      const el = internalRef?.current;
+  useEffect(() => {
+    const el = internalRef?.current;
 
-      if (el) {
-        el.style.setProperty(
-          `--jtjs-mouse-pos-x`,
-          Math.round(mousePos.x).toString()
-        );
-        el.style.setProperty(
-          `--jtjs-mouse-pos-y`,
-          Math.round(mousePos.y).toString()
-        );
-      }
-    }, [mousePos]);
+    if (el) {
+      el.style.setProperty(`--jtjs-mouse-pos-x`, Math.round(mousePos.x).toString());
+      el.style.setProperty(`--jtjs-mouse-pos-y`, Math.round(mousePos.y).toString());
+    }
+  }, [mousePos]);
 
-    return (
-      <button
-        className={buildClassName(
-          className,
-          'jtjs-button',
-          enableMouseTracking ? '' : 'jtjs-disable-mouse-effects'
-        )}
-        type="button"
-        onMouseMove={(event) => {
-          handleTrackMouse(event);
-          onMouseMove?.(event);
-        }}
-        {...otherProps}
-        ref={internalRef}
-      />
-    );
-  }
-);
+  return (
+    <button
+      className={buildClassName(className, 'jtjs-button', enableMouseTracking ? '' : 'jtjs-disable-mouse-effects')}
+      type="button"
+      onMouseMove={(event) => {
+        handleTrackMouse(event);
+        onMouseMove?.(event);
+      }}
+      {...otherProps}
+      ref={internalRef}
+    />
+  );
+};

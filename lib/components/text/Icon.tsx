@@ -1,8 +1,7 @@
-import { ComponentPropsWithRef, forwardRef } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import { buildClassName } from '../../util';
 
-export interface IconProps
-  extends Omit<ComponentPropsWithRef<'span'>, 'children'> {
+export interface IconProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {
   /**
    * The name of the icon. This must match the name of the icon in FontAwesome, minus the
    * `fa` prefix (which is added for you).
@@ -27,22 +26,15 @@ export interface IconProps
  * If your icon doesn't seem to be appearing and you've verified that you're including FontAwesome
  * in your project, try verifying and changing the `iconType`.
  */
-export const Icon = forwardRef<HTMLSpanElement, IconProps>(
-  ({ iconType = 'solid', icon, className, ...otherProps }: IconProps, ref) => {
-    return (
-      <span
-        className={buildClassName(
-          className,
-          'jtjs-icon',
-          getIconStyleText(iconType),
-          `fa-${icon}`
-        )}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+export const Icon = ({ ref, iconType = 'solid', icon, className, ...otherProps }: IconProps) => {
+  return (
+    <span
+      className={buildClassName(className, 'jtjs-icon', getIconStyleText(iconType), `fa-${icon}`)}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};
 
 function getIconStyleText(iconType: IconProps['iconType']): string {
   let iconStyleText = 'fa';

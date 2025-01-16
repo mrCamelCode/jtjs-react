@@ -1,11 +1,4 @@
-import {
-  ComponentPropsWithRef,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-} from 'react';
+import { ComponentPropsWithRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { HideBehaviour } from '../../enums';
 import { buildClassName } from '../../util';
 import { closeDialog } from './dialog.util';
@@ -57,48 +50,39 @@ export interface DialogProps extends ComponentPropsWithRef<'dialog'> {
  * and evaluate whether the use of a dialog/modal is really a requirement. With that said, if you do decide you want this,
  * JTJS does what it can to make the dialog itself accessible and friendly to the browser.
  */
-export const Dialog = forwardRef<HTMLDialogElement, DialogProps>(
-  (
-    {
-      show,
-      isModal = false,
-      className,
-      children,
-      hideBehaviour = HideBehaviour.Remove,
-      ...otherProps
-    }: DialogProps,
-    ref
-  ) => {
-    const internalRef = useRef<HTMLDialogElement>(null);
-    useImperativeHandle(ref, () => internalRef.current as HTMLDialogElement);
+export const Dialog = ({
+  ref,
+  show,
+  isModal = false,
+  className,
+  children,
+  hideBehaviour = HideBehaviour.Remove,
+  ...otherProps
+}: DialogProps) => {
+  const internalRef = useRef<HTMLDialogElement>(null);
+  useImperativeHandle(ref, () => internalRef.current as HTMLDialogElement);
 
-    const showDialog = useCallback(() => {
-      if (isModal) {
-        internalRef.current?.showModal?.();
-      } else {
-        internalRef.current?.show?.();
-      }
-    }, []);
+  const showDialog = useCallback(() => {
+    if (isModal) {
+      internalRef.current?.showModal?.();
+    } else {
+      internalRef.current?.show?.();
+    }
+  }, []);
 
-    useEffect(() => {
-      if (show) {
-        showDialog();
-      } else {
-        closeDialog(internalRef.current);
-      }
-    }, [show, showDialog]);
+  useEffect(() => {
+    if (show) {
+      showDialog();
+    } else {
+      closeDialog(internalRef.current);
+    }
+  }, [show, showDialog]);
 
-    const shouldChildrenBeMounted =
-      show || hideBehaviour === HideBehaviour.Hide;
+  const shouldChildrenBeMounted = show || hideBehaviour === HideBehaviour.Hide;
 
-    return (
-      <dialog
-        className={buildClassName(className, 'jtjs-dialog')}
-        {...otherProps}
-        ref={internalRef}
-      >
-        {shouldChildrenBeMounted && children}
-      </dialog>
-    );
-  }
-);
+  return (
+    <dialog className={buildClassName(className, 'jtjs-dialog')} {...otherProps} ref={internalRef}>
+      {shouldChildrenBeMounted && children}
+    </dialog>
+  );
+};

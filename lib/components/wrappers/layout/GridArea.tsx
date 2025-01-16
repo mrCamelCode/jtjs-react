@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, forwardRef } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import { buildClassName } from '../../../util/util-functions';
 
 export interface GridAreaProps extends ComponentPropsWithRef<'div'> {
@@ -38,34 +38,29 @@ export interface GridAreaProps extends ComponentPropsWithRef<'div'> {
 /**
  * Used in conjunction with `Grid`. Allows you to easily outline the areas of your grid.
  */
-export const GridArea = forwardRef<HTMLDivElement, GridAreaProps>(
-  (
-    { className, style, name, row, column, ...otherProps }: GridAreaProps,
-    ref
-  ) => {
-    if ((!!row || !!column) && !!name) {
-      console.warn(
-        `GridArea: You shouldn't define the 'name' and the 'row'/'column' props at the same time. ` +
-          `The styles conflict and will give you undesired results.`
-      );
-    }
-
-    return (
-      <div
-        className={buildClassName(className, 'jtjs-grid-area')}
-        style={{
-          // For some reason, _something_ rewrites these styles and so I can't include
-          // them all and have to conditionally decide when they're available. Having row/column
-          // specified at the same time as an undefined area and vice versa breaks whatever is
-          // trying to rewrite the styles. I'm guessing it's something the browser or
-          // React is trying to do.
-          ...(!!row || !!column ? { gridRow: row, gridColumn: column } : {}),
-          ...(!!name ? { gridArea: name } : {}),
-          ...style,
-        }}
-        {...otherProps}
-        ref={ref}
-      />
+export const GridArea = ({ ref, className, style, name, row, column, ...otherProps }: GridAreaProps) => {
+  if ((!!row || !!column) && !!name) {
+    console.warn(
+      `GridArea: You shouldn't define the 'name' and the 'row'/'column' props at the same time. ` +
+        `The styles conflict and will give you undesired results.`
     );
   }
-);
+
+  return (
+    <div
+      className={buildClassName(className, 'jtjs-grid-area')}
+      style={{
+        // For some reason, _something_ rewrites these styles and so I can't include
+        // them all and have to conditionally decide when they're available. Having row/column
+        // specified at the same time as an undefined area and vice versa breaks whatever is
+        // trying to rewrite the styles. I'm guessing it's something the browser or
+        // React is trying to do.
+        ...(!!row || !!column ? { gridRow: row, gridColumn: column } : {}),
+        ...(!!name ? { gridArea: name } : {}),
+        ...style,
+      }}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};

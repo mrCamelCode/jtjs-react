@@ -1,8 +1,7 @@
-import { ComponentPropsWithRef, forwardRef } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import { buildClassName } from '../../../util';
 
-export interface LoadIndicatorProps
-  extends Omit<ComponentPropsWithRef<'div'>, 'children'> {}
+export interface LoadIndicatorProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {}
 
 /**
  * Default load indicator. Resolves to `span`s inside a `div` container.
@@ -18,23 +17,12 @@ export interface LoadIndicatorProps
  *  .jtjs-loading-dot.jtjs-loading-dot-2
  * ```
  */
-export const LoadIndicator = forwardRef<HTMLDivElement, LoadIndicatorProps>(
-  ({ className, ...otherProps }: LoadIndicatorProps, ref) => {
-    return (
-      <div
-        className={buildClassName(className, 'jtjs-loading-dots-container')}
-        {...otherProps}
-        ref={ref}
-      >
-        {[1, 2].map((num) => {
-          return (
-            <span
-              className={`jtjs-loading-dot jtjs-loading-dot-${num}`}
-              key={num}
-            />
-          );
-        })}
-      </div>
-    );
-  }
-);
+export const LoadIndicator = ({ ref, className, ...otherProps }: LoadIndicatorProps) => {
+  return (
+    <div className={buildClassName(className, 'jtjs-loading-dots-container')} {...otherProps} ref={ref}>
+      {[1, 2].map((num) => {
+        return <span className={`jtjs-loading-dot jtjs-loading-dot-${num}`} key={num} />;
+      })}
+    </div>
+  );
+};

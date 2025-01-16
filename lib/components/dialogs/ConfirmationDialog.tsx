@@ -1,14 +1,9 @@
-import { forwardRef } from 'react';
 import { StructuredDialog, StructuredDialogProps } from './StructuredDialog';
 import { DialogButton } from './dialog.model';
 
-export type ConfirmationDialogButton = Omit<
-  DialogButton,
-  'closeDialogOnClick' | 'beforeCloseOnClick'
->;
+export type ConfirmationDialogButton = Omit<DialogButton, 'closeDialogOnClick' | 'beforeCloseOnClick'>;
 
-export interface ConfirmationDialogProps
-  extends Omit<StructuredDialogProps, 'buttons'> {
+export interface ConfirmationDialogProps extends Omit<StructuredDialogProps, 'buttons'> {
   /**
    * The data for the button that represents accepting the confirmation. Defaults to
    * a button with text `Okay` that closes the dialog when clicked. Use `onAccept` to
@@ -47,40 +42,27 @@ export interface ConfirmationDialogProps
  *
  * The dialog will automatically close if the handler for the action (`onAccept`/`onReject`) evaluates to `true`.
  */
-export const ConfirmationDialog = forwardRef<
-  HTMLDialogElement,
-  ConfirmationDialogProps
->(
-  (
-    {
-      acceptButton,
-      rejectButton,
-      onAccept,
-      onReject,
-      ...otherProps
-    }: ConfirmationDialogProps,
-    ref
-  ) => {
-    const autoAcceptButton = {
-      text: acceptButton?.text ?? 'Okay',
-      ...acceptButton,
-      closeDialogOnClick: true,
-      beforeCloseOnClick: onAccept,
-    } as DialogButton;
+export const ConfirmationDialog = ({
+  ref,
+  acceptButton,
+  rejectButton,
+  onAccept,
+  onReject,
+  ...otherProps
+}: ConfirmationDialogProps) => {
+  const autoAcceptButton = {
+    text: acceptButton?.text ?? 'Okay',
+    ...acceptButton,
+    closeDialogOnClick: true,
+    beforeCloseOnClick: onAccept,
+  } as DialogButton;
 
-    const autoRejectButton = {
-      text: rejectButton?.text ?? 'Cancel',
-      ...rejectButton,
-      closeDialogOnClick: true,
-      beforeCloseOnClick: onReject,
-    } as DialogButton;
+  const autoRejectButton = {
+    text: rejectButton?.text ?? 'Cancel',
+    ...rejectButton,
+    closeDialogOnClick: true,
+    beforeCloseOnClick: onReject,
+  } as DialogButton;
 
-    return (
-      <StructuredDialog
-        buttons={[autoAcceptButton, autoRejectButton]}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+  return <StructuredDialog buttons={[autoAcceptButton, autoRejectButton]} {...otherProps} ref={ref} />;
+};

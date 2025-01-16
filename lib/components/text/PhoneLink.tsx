@@ -1,4 +1,4 @@
-import { Children, forwardRef } from 'react';
+import { Children } from 'react';
 import { Link, LinkProps } from './Link';
 
 export interface PhoneLinkProps extends LinkProps {
@@ -10,12 +10,10 @@ export interface PhoneLinkProps extends LinkProps {
  *
  * If you don't include any children, the link will use the phone number for its text.
  */
-export const PhoneLink = forwardRef<HTMLAnchorElement, PhoneLinkProps>(
-  ({ phoneNumber, children, ...otherProps }: PhoneLinkProps, ref) => {
-    return (
-      <Link href={`tel:${phoneNumber}`} {...otherProps} ref={ref}>
-        {Children.count(children) === 0 ? phoneNumber : children}
-      </Link>
-    );
-  }
-);
+export const PhoneLink = ({ ref, phoneNumber, children, ...otherProps }: PhoneLinkProps) => {
+  return (
+    <Link href={`tel:${phoneNumber}`} {...otherProps} ref={ref}>
+      {Children.count(children) === 0 ? phoneNumber : children}
+    </Link>
+  );
+};

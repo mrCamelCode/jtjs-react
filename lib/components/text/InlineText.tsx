@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, forwardRef } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import { buildClassName } from '../../util/util-functions';
 
 export interface InlineTextProps extends ComponentPropsWithRef<'span'> {
@@ -6,27 +6,25 @@ export interface InlineTextProps extends ComponentPropsWithRef<'span'> {
   bold?: boolean;
 }
 
-export const InlineText = forwardRef<HTMLSpanElement, InlineTextProps>(
-  ({ italic = false, bold = false, className, style, ...otherProps }: InlineTextProps, ref) => {
-    return (
-      <span
-        className={buildClassName(className, 'jtjs-inline-text')}
-        style={{
-          ...(italic
-            ? {
-                fontStyle: 'italic',
-              }
-            : {}),
-          ...(bold
-            ? {
-                fontWeight: 'bold',
-              }
-            : {}),
-          ...style,
-        }}
-        {...otherProps}
-        ref={ref}
-      />
-    );
-  }
-);
+export const InlineText = ({ ref, italic = false, bold = false, className, style, ...otherProps }: InlineTextProps) => {
+  return (
+    <span
+      className={buildClassName(className, 'jtjs-inline-text')}
+      style={{
+        ...(italic
+          ? {
+              fontStyle: 'italic',
+            }
+          : {}),
+        ...(bold
+          ? {
+              fontWeight: 'bold',
+            }
+          : {}),
+        ...style,
+      }}
+      {...otherProps}
+      ref={ref}
+    />
+  );
+};
