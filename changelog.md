@@ -1,3 +1,7 @@
+# 3.0.1
+
+- Add repo information.
+
 # 3.0.0
 
 ## Breaking Changes
