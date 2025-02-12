@@ -1,12 +1,16 @@
 {
   "name": "@jtjs/react",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "license": "MIT",
   "description": "A component library for React applications.",
   "type": "module",
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrCamelCode/jtjs-react.git"
+  },
   "module": "./dist/jtjs_react.js",
   "exports": {
     ".": {
